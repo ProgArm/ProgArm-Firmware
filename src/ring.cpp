@@ -1,4 +1,3 @@
-//#include <stm32f10x_gpio.h>
 #include <stm32f10x_exti.h>
 #include <misc.h>
 #include <algorithm>
@@ -83,8 +82,8 @@ void resetButtons() {
     clicks = 0;
 }
 
-void buttonRelease() { // TODO surely it is meant to work with two buttons only
-    if (!wasPressed[0] && !wasPressed[1]) // this release was already processed.
+void buttonRelease() { // XXX it is meant to work with two buttons only, add support for more buttons?
+    if (!wasPressed[0] && !wasPressed[1]) // if this release was already processed.
         return;
 
     int delta1 = milliseconds - lastPress[0];

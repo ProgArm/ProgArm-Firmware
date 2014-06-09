@@ -7,7 +7,7 @@ ErrorStatus HSEStartUpStatus; // XXX why here?
 
 volatile int milliseconds = 0;
 
-void setSysClockToHSE() {
+void setSysClockToHSE() { // TODO not really HSE yet
     SystemInit();
     //RCC_HSEConfig(RCC_HSE_ON); // Enable HSE
 
