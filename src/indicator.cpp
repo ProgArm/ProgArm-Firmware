@@ -52,8 +52,8 @@ extern "C" void TIM2_IRQHandler() {
             for (int i = 0; i < 3; i++)
                 LED_GPIO[i]->BRR = LED_PINS[i];
         } else if (presenceStatus) {
-            LED_GPIO[LED_BLUE]->BRR = LED_PINS[LED_BLUE];
-            LED_GPIO[LED_BLUE]->BSRR = LED_PINS[LED_BLUE];
+            LED_GPIO[LED_GREEN]->BRR = LED_PINS[LED_GREEN];
+            LED_GPIO[LED_GREEN]->BSRR = LED_PINS[LED_GREEN];
         }
         TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
         //GPIO_ReadOutputDataBit()
