@@ -1,6 +1,7 @@
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_usart.h>
 
+#include "actions.hpp"
 #include "connection.hpp"
 
 void configureConnection() {
@@ -54,9 +55,11 @@ void print(const char* str) {
 void clientPut(uint8_t ch) {
     USART_SendData(USART1, (uint8_t) ch);
     while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE))
+        // XXX before or after?
         ;
     //Loop until the end of transmission
 }
+
 uint8_t clientGet() {
     while (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET)
         ;
@@ -65,4 +68,24 @@ uint8_t clientGet() {
 
 void bluetoothSwitchPower(bool turnOn) {
     GPIO_WriteBit(GPIOA, POWER_BLUETOOTH, turnOn ? Bit_RESET : Bit_SET);
+}
+
+void processIncomingData() { // TODO use interrupts to process data
+    if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET)
+        return; // no data to read
+
+    uint8_t received = (uint8_t) USART_ReceiveData(USART1);
+    switch (received) {
+    case 'p':
+        clientPut('P');
+        break;
+    case 'E':
+        changeState(clientGet()); // XXX what if client disconnects exactly at this moment?
+        break;
+    default:
+        char buffer[60]; // XXX use some existining buffer instead?
+        sprintf(buffer, "Error: Skipping unexpected byte: %d\n", received);
+        printPlain(buffer);
+        break;
+    }
 }
