@@ -3,10 +3,30 @@
 #include "actions.hpp"
 
 int currentAction = ACTION_NONE;
-bool ignoreTable[36] = { }; // XXX bools are inefficient
+bool deviceActionsEnabled = true;
+bool ignoreTable[36] = { }; // XXX bools are stored inefficiently
+
+void changeState(uint8_t option) {
+    switch (option) {
+    case 0:
+    case '0':
+        deviceActionsEnabled = false;
+        break;
+    case 1:
+    case '1':
+        deviceActionsEnabled = true;
+        break;
+    case 2:
+    case '2':
+        deviceActionsEnabled = !deviceActionsEnabled;
+        break;
+    }
+}
 
 void processAction(int action) {
     // TODO check action range
+    if (!deviceActionsEnabled)
+        return;
 
     if (currentAction != ACTION_NONE) {
         switch (currentAction) {

@@ -10,6 +10,8 @@ static const uint16_t POWER_BLUETOOTH = GPIO_Pin_15;
 void configureConnection();
 void bluetoothSwitchPower(bool turnOn);
 
+void processIncomingData();
+
 void print(const char* str);
 void printPlain(const char* str);
 void clientPut(uint8_t ch);
