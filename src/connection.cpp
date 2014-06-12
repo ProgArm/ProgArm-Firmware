@@ -44,6 +44,13 @@ void printPlain(const char* str) {
     clientPut(0);
 }
 
+void printSensor(uint8_t sensor, const char* str) {
+    print("S");
+    clientPut(sensor);
+    print(str);
+    clientPut(0);
+}
+
 void print(const char* str) {
     for (unsigned int i = 0; str[i]; i++) {
         while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE))
@@ -53,10 +60,10 @@ void print(const char* str) {
 }
 
 void clientPut(uint8_t ch) {
-    USART_SendData(USART1, (uint8_t) ch);
     while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE))
         // XXX before or after?
         ;
+    USART_SendData(USART1, (uint8_t) ch);
     //Loop until the end of transmission
 }
 

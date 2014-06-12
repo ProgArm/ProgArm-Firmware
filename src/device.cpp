@@ -3,7 +3,8 @@
 #include "connection.hpp"
 #include "indicator.hpp"
 #include "ring.hpp"
-#include "vibration.h"
+#include "vibration.hpp"
+#include "compass.hpp"
 
 void disableUnusedFeatures() {
     // JTAG pins are used for device peripherals
@@ -29,6 +30,7 @@ void configureDevice() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE); // We will need this for sure
 
     disableUnusedFeatures();
+    configurePeripheralPower();
     configureConnection();
     configureLed();
     configureRing();
@@ -36,4 +38,9 @@ void configureDevice() {
 
     peripheralsSwitchPower(true);
     bluetoothSwitchPower(true);
+
+    volatile int i;
+    for (i = 0; i < 100000; i++)
+        ;
+    configureCompass();
 }

@@ -1,6 +1,7 @@
 #include "input_codes.hpp"
 #include "indicator.hpp"
 #include "actions.hpp"
+#include "compass.hpp"
 
 int currentAction = ACTION_NONE;
 bool deviceActionsEnabled = true;
@@ -49,6 +50,9 @@ void processAction(int action) {
             break;
         case INPUT_I:
             presenceToggle();
+            break;
+        case INPUT_O:
+            compassToggle();
             break;
         default:
             break;
