@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-
 #include <stm32f10x_gpio.h>
 
 static const int RING_BUTTON_COUNT = 2;

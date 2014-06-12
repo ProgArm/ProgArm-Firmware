@@ -3,6 +3,7 @@
 #include "connection.hpp"
 #include "indicator.hpp"
 #include "ring.hpp"
+#include "vibration.h"
 
 void disableUnusedFeatures() {
     // JTAG pins are used for device peripherals
@@ -31,6 +32,7 @@ void configureDevice() {
     configureConnection();
     configureLed();
     configureRing();
+    configureVibration();
 
     peripheralsSwitchPower(true);
     bluetoothSwitchPower(true);
