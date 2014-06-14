@@ -22,9 +22,9 @@
 #include "connection.hpp"
 #include "actions.hpp"
 
-volatile bool pressed[RING_BUTTON_COUNT];
-volatile bool wasPressed[RING_BUTTON_COUNT];
-volatile int lastPress[RING_BUTTON_COUNT];
+volatile bool pressed[RING_BUTTON_COUNT] = { };
+volatile bool wasPressed[RING_BUTTON_COUNT] = { };
+volatile int lastPress[RING_BUTTON_COUNT] = { };
 
 static const int DEBOUNCE_MILLISECONDS = 10;
 static const int CLICK_SHORT_MILLISECONDS = 50;
@@ -86,14 +86,15 @@ void resetButtons() {
     if (clicks != 0) {
         LED_GPIO[LED_RED]->BRR = LED_PINS[LED_RED];
         LED_GPIO[LED_RED]->BSRR = LED_PINS[LED_RED];
+        for (int i = 0; i < RING_BUTTON_COUNT; i++) {
+            pressed[i] = false;
+            wasPressed[i] = false;
+            //lastPress[i]=0;
+        }
+        action = 0;
+        clicks = 0;
+        printPlain("Reset");
     }
-    for (int i = 0; i < RING_BUTTON_COUNT; i++) {
-        pressed[i] = false;
-        wasPressed[i] = false;
-        //lastPress[i]=0;
-    }
-    action = 0;
-    clicks = 0;
 }
 
 void buttonRelease() { // XXX it is meant to work with two buttons only, add support for more buttons?
