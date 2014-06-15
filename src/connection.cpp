@@ -17,6 +17,7 @@
 
 #include "actions.hpp"
 #include "connection.hpp"
+#include "vibration.hpp"
 
 void configureConnection() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
@@ -102,6 +103,9 @@ void processIncomingData() { // TODO use interrupts to process data
         break;
     case 'E':
         changeState(clientGet()); // XXX what if client disconnects exactly at this moment?
+        break;
+    case 'V':
+        setVibration(0xFFFF / 255 * clientGet());
         break;
     default:
         char buffer[60]; // XXX use some existining buffer instead?
