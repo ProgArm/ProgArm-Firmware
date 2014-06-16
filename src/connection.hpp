@@ -25,6 +25,7 @@ static const uint16_t POWER_BLUETOOTH = GPIO_Pin_15;
 
 void configureConnection();
 void bluetoothSwitchPower(bool turnOn);
+void bluetoothTogglePower();
 
 void processIncomingData();
 

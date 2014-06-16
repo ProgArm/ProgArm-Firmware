@@ -92,6 +92,10 @@ void bluetoothSwitchPower(bool turnOn) {
     GPIO_WriteBit(GPIOA, POWER_BLUETOOTH, turnOn ? Bit_RESET : Bit_SET);
 }
 
+void bluetoothTogglePower() {
+    GPIO_WriteBit(GPIOA, POWER_BLUETOOTH, GPIO_ReadOutputDataBit(GPIOA, POWER_BLUETOOTH) == Bit_SET ? Bit_RESET : Bit_SET);
+}
+
 void processIncomingData() { // TODO use interrupts to process data
     if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET)
         return; // no data to read

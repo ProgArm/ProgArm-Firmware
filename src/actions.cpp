@@ -16,6 +16,7 @@
 #include "indicator.hpp"
 #include "actions.hpp"
 #include "compass.hpp"
+#include "connection.hpp"
 
 int currentAction = ACTION_NONE;
 bool deviceActionsEnabled = true;
@@ -67,6 +68,9 @@ void processAction(int action) {
             break;
         case INPUT_O:
             compassToggle();
+            break;
+        case INPUT_B:
+            bluetoothTogglePower();
             break;
         default:
             break;
