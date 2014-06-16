@@ -108,7 +108,7 @@ void processIncomingData() { // TODO use interrupts to process data
         setVibration(0xFFFF / 255 * clientGet());
         break;
     default:
-        char buffer[60]; // XXX use some existining buffer instead?
+        char buffer[60]; // XXX use some existing buffer instead?
         sprintf(buffer, "Error: Skipping unexpected byte: %d\n", received);
         printPlain(buffer);
         break;

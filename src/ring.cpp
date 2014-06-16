@@ -24,7 +24,7 @@
 
 volatile bool pressed[RING_BUTTON_COUNT] = { };
 volatile bool wasPressed[RING_BUTTON_COUNT] = { };
-volatile int lastPress[RING_BUTTON_COUNT] = { };
+int lastPress[RING_BUTTON_COUNT] = { };
 
 static const int DEBOUNCE_MILLISECONDS = 10;
 static const int CLICK_SHORT_MILLISECONDS = 50;
@@ -84,8 +84,8 @@ void resetButtons() {
         return; // no reset needed
 
     if (clicks != 0) {
-        LED_GPIO[LED_RED]->BRR = LED_PINS[LED_RED];
-        LED_GPIO[LED_RED]->BSRR = LED_PINS[LED_RED];
+        LED_GPIO[LED_GREEN]->BRR = LED_PINS[LED_GREEN];
+        LED_GPIO[LED_GREEN]->BSRR = LED_PINS[LED_GREEN];
         for (int i = 0; i < RING_BUTTON_COUNT; i++) {
             pressed[i] = false;
             wasPressed[i] = false;
@@ -93,7 +93,6 @@ void resetButtons() {
         }
         action = 0;
         clicks = 0;
-        printPlain("Reset");
     }
 }
 

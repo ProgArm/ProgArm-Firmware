@@ -15,9 +15,15 @@
 #include "device.hpp"
 #include "ring.hpp"
 #include "connection.hpp"
+#include "indicator.hpp"
 #include "stdio.h"
 #include <stdlib.h>
 #include "compass.hpp"
+#include "stm32f10x_pwr.h"
+#include "timing.hpp"
+
+#include <misc.h>
+#include <algorithm>
 
 int main(void) {
     configureDevice();
@@ -28,5 +34,11 @@ int main(void) {
         processIncomingData();
         updateCompass();
         count++;
+
+        if (milliseconds - std::max(lastPress[0], lastPress[1]) > 1000) {
+            __WFI();
+            //PWR_EnterSTANDBYMode();
+            //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
+        }
     }
 }

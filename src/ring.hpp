@@ -18,6 +18,7 @@
 
 static const int RING_BUTTON_COUNT = 2;
 static const uint16_t RING_BUTTON_PINS[] = { GPIO_Pin_0, GPIO_Pin_12 };
+extern int lastPress[];
 
 void configureRing();
 void resetButtons();
