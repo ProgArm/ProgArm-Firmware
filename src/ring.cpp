@@ -129,8 +129,7 @@ void buttonRelease() { // XXX it is meant to work with two buttons only, add sup
 
     if (clicks == 2) {
         processAction(action);
-        clientPut('L'); // TODO this can take a long time, we want to end interrupt call as fast as we can
-        clientPut(action); // TODO
+        printAction(action);
         action = 0;
         clicks = 0;
     } else

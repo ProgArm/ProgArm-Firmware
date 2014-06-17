@@ -44,9 +44,9 @@ void configureDevice() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE); // We will need this for sure
 
     disableUnusedFeatures();
+    configureLed();
     configurePeripheralPower();
     configureConnection();
-    configureLed();
     configureRing();
     configureVibration();
 
@@ -56,5 +56,5 @@ void configureDevice() {
     volatile int i;
     for (i = 0; i < 100000; i++)
         ;
-    configureCompass();
+    //configureCompass();
 }

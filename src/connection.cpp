@@ -14,10 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_usart.h>
+#include <stm32f10x_spi.h>
 
 #include "actions.hpp"
 #include "connection.hpp"
 #include "vibration.hpp"
+#include "indicator.hpp" // TODO deleteme
+
+const int OUTPUT_BUFFER_SIZE = 500;
+uint8_t outputBuffer[OUTPUT_BUFFER_SIZE] = { }; // TODO separate buffer into class?
+int outputBufferHead = 0;
+int outputBufferTail = 0;
+
+void NVIC_Configuration(void) {
+    NVIC_InitTypeDef NVIC_InitStructure;
+    /* Place the vector table into FLASH */
+    //NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0); // XXX why?
+    /* Enabling interrupt from USART1 */
+    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+}
 
 void configureConnection() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
@@ -51,35 +70,82 @@ void configureConnection() {
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
     USART_Init(USART1, &USART_InitStructure);
     USART_Cmd(USART1, ENABLE);
+
+    //USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
+    NVIC_Configuration();
+}
+
+void processOutgoingData() {
+    if (outputBufferHead != outputBufferTail)
+        if (USART_GetFlagStatus(USART1, USART_FLAG_TXE)) {
+            USART_SendData(USART1, outputBuffer[outputBufferHead++]);
+            if (outputBufferHead >= OUTPUT_BUFFER_SIZE)
+                outputBufferHead = 0;
+        }
+    if (outputBufferHead != outputBufferTail)
+        USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
+}
+
+int reserveBufferPart(int neededSize) {
+    __disable_irq();
+    int returnPosition = outputBufferTail;
+    outputBufferTail += neededSize;
+    __enable_irq();
+    return returnPosition;
 }
 
 void printPlain(const char* str) {
-    print("T");
-    print(str);
-    clientPut(0);
-}
+    int size = 0;
+    for (; str[size]; size++)
+        ;
 
-void printSensor(uint8_t sensor, const char* str) {
-    print("S");
-    clientPut(sensor);
-    print(str);
-    clientPut(0);
-}
-
-void print(const char* str) {
-    for (unsigned int i = 0; str[i]; i++) {
-        while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE))
-            ;
-        USART_SendData(USART1, str[i]);
+    int start = reserveBufferPart(size + 2); // 'T' + str + \0
+    outputBuffer[start] = 'T';
+    int location = start;
+    for (int i = 0; i < size + 1; i++) {
+        if (++location >= OUTPUT_BUFFER_SIZE)
+            location = 0;
+        outputBuffer[location] = str[i];
     }
 }
 
-void clientPut(uint8_t ch) {
-    while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE))
-        // XXX before or after?
+void printSensor(uint8_t sensor, const char* str) {
+    int size = 0; // TODO !!! copy-pasted code from printPlain
+    for (; str[size]; size++)
         ;
-    USART_SendData(USART1, (uint8_t) ch);
-    //Loop until the end of transmission
+
+    int start = reserveBufferPart(size + 3); // 'C' + '?' + str + \0
+    outputBuffer[start] = 'T';
+    outputBuffer[start + 1] = sensor;
+    int location = start + 1;
+    for (int i = 0; i < size + 1; i++) {
+        if (++location >= OUTPUT_BUFFER_SIZE)
+            location = 0;
+        outputBuffer[location] = str[i];
+    }
+}
+
+void print(const char* str) {
+    int size = 0; // TODO !!! copy-pasted code from printPlain
+    for (; str[size]; size++)
+        ;
+
+    int start = reserveBufferPart(size);
+    int location = start;
+    for (int i = 0; i < size; i++) {
+        outputBuffer[location++] = str[i];
+        if (location >= OUTPUT_BUFFER_SIZE)
+            location = 0;
+    }
+
+    processOutgoingData();
+}
+
+void printAction(uint8_t action) {
+    int location = reserveBufferPart(2);
+    outputBuffer[location] = 'L';
+    outputBuffer[location + 1] = action;
+    processOutgoingData();
 }
 
 uint8_t clientGet() {
@@ -96,6 +162,21 @@ void bluetoothTogglePower() {
     GPIO_WriteBit(GPIOA, POWER_BLUETOOTH, GPIO_ReadOutputDataBit(GPIOA, POWER_BLUETOOTH) == Bit_SET ? Bit_RESET : Bit_SET);
 }
 
+extern "C" void USART1_IRQHandler(void) {
+    if (USART_GetFlagStatus(USART1, USART_FLAG_TXE)) { // copy-pasted from processOutgoingData
+        USART_SendData(USART1, outputBuffer[outputBufferHead++]);
+        if (outputBufferHead >= OUTPUT_BUFFER_SIZE)
+            outputBufferHead = 0;
+
+        if (outputBufferHead == outputBufferTail)
+            USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
+    }
+
+    //outputBufferTail++;
+    //USART_ClearITPendingBit(USART1,USART_IT_TXE);
+    //processOutgoingData();
+}
+
 void processIncomingData() { // TODO use interrupts to process data
     if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET)
         return; // no data to read
@@ -103,7 +184,7 @@ void processIncomingData() { // TODO use interrupts to process data
     uint8_t received = (uint8_t) USART_ReceiveData(USART1);
     switch (received) {
     case 'p':
-        clientPut('P');
+        //clientPut('P'); // TODO
         break;
     case 'E':
         changeState(clientGet()); // XXX what if client disconnects exactly at this moment?
