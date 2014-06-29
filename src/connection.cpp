@@ -19,7 +19,6 @@
 #include "actions.hpp"
 #include "connection.hpp"
 #include "vibration.hpp"
-#include "indicator.hpp" // TODO deleteme
 
 const int OUTPUT_BUFFER_SIZE = 500;
 uint8_t outputBuffer[OUTPUT_BUFFER_SIZE] = { }; // TODO separate buffer into class?
@@ -164,14 +163,13 @@ void bluetoothTogglePower() {
 
 extern "C" void USART1_IRQHandler(void) {
     if (USART_GetFlagStatus(USART1, USART_FLAG_TXE)) { // copy-pasted from processOutgoingData
-        USART_SendData(USART1, outputBuffer[outputBufferHead++]);
+        USART_SendData(USART1, outputBuffer[outputBufferHead++]); // XXX what if that buffer was not filled yet?
         if (outputBufferHead >= OUTPUT_BUFFER_SIZE)
             outputBufferHead = 0;
 
         if (outputBufferHead == outputBufferTail)
             USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
     }
-
     //outputBufferTail++;
     //USART_ClearITPendingBit(USART1,USART_IT_TXE);
     //processOutgoingData();
@@ -193,7 +191,7 @@ void processIncomingData() { // TODO use interrupts to process data
         setVibration(0xFFFF / 255 * clientGet());
         break;
     default:
-        char buffer[60]; // XXX use some existing buffer instead?
+        char buffer[60]; // XXX use some existing buffer instead? // NO, use outgoing buffer when output becomes interrupt-driven
         sprintf(buffer, "Error: Skipping unexpected byte: %d\n", received);
         printPlain(buffer);
         break;

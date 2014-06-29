@@ -40,7 +40,7 @@ void EnableTimerInterrupt() {
     nvicStructure.NVIC_IRQChannelPreemptionPriority = 0;
     nvicStructure.NVIC_IRQChannelSubPriority = 1;
     nvicStructure.NVIC_IRQChannelCmd = ENABLE;
-    //NVIC_Init(&nvicStructure);
+    NVIC_Init(&nvicStructure);
 }
 
 void configureLed() {
