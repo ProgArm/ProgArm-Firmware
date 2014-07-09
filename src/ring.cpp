@@ -71,12 +71,6 @@ void configureRing() {
     EXTI_Init(&EXTI_InitStructure);
     NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
     NVIC_Init(&NVIC_InitStructure);
-
-    for (int i = 0; i < RING_BUTTON_COUNT; i++) {
-        pressed[i] = false;
-        wasPressed[i] = false;
-        lastPress[i] = 0;
-    }
 }
 
 void resetButtons() {
