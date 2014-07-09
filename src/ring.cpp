@@ -38,13 +38,13 @@ void configureRing() {
     GPIO_InitTypeDef gpio;
     gpio.GPIO_Speed = GPIO_Speed_2MHz;
 
-    gpio.GPIO_Pin = RING_BUTTON_PINS[0];
+    gpio.GPIO_Pin = GPIO_Pin_0;
     gpio.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_Init(GPIOA, &gpio);
 
-    gpio.GPIO_Pin = RING_BUTTON_PINS[1];
+    gpio.GPIO_Pin = GPIO_Pin_1;
     gpio.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_Init(GPIOB, &gpio);
+    GPIO_Init(GPIOA, &gpio);
 
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
 
@@ -66,10 +66,10 @@ void configureRing() {
     NVIC_Init(&NVIC_InitStructure);
 
     // Second button
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource12);
-    EXTI_InitStructure.EXTI_Line = EXTI_Line12;
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
+    EXTI_InitStructure.EXTI_Line = EXTI_Line1;
     EXTI_Init(&EXTI_InitStructure);
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
     NVIC_Init(&NVIC_InitStructure);
 
     for (int i = 0; i < RING_BUTTON_COUNT; i++) {
