@@ -44,7 +44,7 @@ void configureRing() {
 
     gpio.GPIO_Pin = GPIO_Pin_1;
     gpio.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_Init(GPIOA, &gpio);
+    GPIO_Init(GPIOC, &gpio);
 
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
 
@@ -66,7 +66,7 @@ void configureRing() {
     NVIC_Init(&NVIC_InitStructure);
 
     // Second button
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource1);
     EXTI_InitStructure.EXTI_Line = EXTI_Line1;
     EXTI_Init(&EXTI_InitStructure);
     NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
