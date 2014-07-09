@@ -36,18 +36,14 @@ void configureLed() {
     GPIO_InitTypeDef gpio;
     gpio.GPIO_Speed = GPIO_Speed_2MHz;
     gpio.GPIO_Mode = GPIO_Mode_AF_PP;
-
-    for (int i = 0; i < 3; i++) {
-        gpio.GPIO_Pin = LED_PINS[i];
-        gpio.GPIO_Mode = GPIO_Mode_Out_OD;
-        GPIO_Init(LED_GPIO[i], &gpio);
-    }
+    gpio.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
+    GPIO_Init(GPIOA, &gpio);
 
     InitializePresenceIndicator();
 }
 
 void notifyAboutError(DEVICE_ERROR error) {
-    //GPIO_WriteBit(LED_GPIO[LED_RED], LED_PINS[LED_RED], Bit_RESET); // TODO
+//GPIO_WriteBit(LED_GPIO[LED_RED], LED_PINS[LED_RED], Bit_RESET); // TODO
 }
 
 void presenceToggle() {

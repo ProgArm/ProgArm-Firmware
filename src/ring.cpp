@@ -78,8 +78,8 @@ void resetButtons() {
         return; // no reset needed
 
     if (clicks != 0) {
-        LED_GPIO[LED_GREEN]->BRR = LED_PINS[LED_GREEN];
-        LED_GPIO[LED_GREEN]->BSRR = LED_PINS[LED_GREEN];
+        //LED_GPIO[LED_GREEN]->BRR = LED_PINS[LED_GREEN]; //TODO
+        //LED_GPIO[LED_GREEN]->BSRR = LED_PINS[LED_GREEN];
         for (int i = 0; i < RING_BUTTON_COUNT; i++) {
             pressed[i] = false;
             wasPressed[i] = false;
@@ -133,16 +133,17 @@ void buttonRelease() { // XXX it is meant to work with two buttons only, add sup
 void processInterrupt(int buttonId) {
     int delta = milliseconds - lastPress[buttonId];
     if (milliseconds == 0)
-        GPIO_WriteBit(LED_GPIO[0], LED_PINS[0], Bit_RESET);
+        ; //GPIO_WriteBit(LED_GPIO[0], LED_PINS[0], Bit_RESET); // TODO
     if (delta > DEBOUNCE_MILLISECONDS) {
         pressed[buttonId] = !pressed[buttonId];
         if (pressed[buttonId]) { // press
             wasPressed[buttonId] = true;
-            GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_RESET); // buttonId + 1 is a hack
-            GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_SET);
+            //TODO
+            //GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_RESET); // buttonId + 1 is a hack
+            //GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_SET);
         } else { // release
-            GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_RESET);
-            GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_SET);
+            //GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_RESET);
+            //GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_SET);
             buttonRelease();
         }
         lastPress[buttonId] = milliseconds;
