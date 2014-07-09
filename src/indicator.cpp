@@ -17,65 +17,37 @@
 
 bool flashlightStatus = false;
 bool presenceStatus = false;
-int presenceCounter = 0;
 
-void InitializePresenceIndicator() // TODO use real PWM!
-{
+void InitializePresenceIndicator() {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
-    TIM_TimeBaseInitTypeDef timerInitStructure;
-    timerInitStructure.TIM_Prescaler = 4000;
-    timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-    timerInitStructure.TIM_Period = 20;
-    timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-    timerInitStructure.TIM_RepetitionCounter = 0;
-    TIM_TimeBaseInit(TIM2, &timerInitStructure);
-    TIM_Cmd(TIM2, ENABLE);
-    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-}
+    TIM2->CCER |= (TIM_CCER_CC2E | TIM_CCER_CC3E | TIM_CCER_CC4E); // select used pins
+    TIM2->CCMR1 |= (TIM_CCMR1_OC2M_0 | TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2); // inverse PWM
+    TIM2->CCMR2 |= (TIM_CCMR2_OC3M_0 | TIM_CCMR2_OC3M_1 | TIM_CCMR2_OC3M_2);
+    TIM2->CCMR2 |= (TIM_CCMR2_OC4M_0 | TIM_CCMR2_OC4M_1 | TIM_CCMR2_OC4M_2);
+    TIM2->CR1 |= TIM_CR1_CEN; // enable counter
 
-void EnableTimerInterrupt() {
-    NVIC_InitTypeDef nvicStructure;
-    nvicStructure.NVIC_IRQChannel = TIM2_IRQn;
-    nvicStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    nvicStructure.NVIC_IRQChannelSubPriority = 1;
-    nvicStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&nvicStructure);
+    TIM2->CCR2 = 0; // turn it off
+    TIM2->CCR3 = 0;
+    TIM2->CCR4 = 0;
 }
 
 void configureLed() {
     GPIO_InitTypeDef gpio;
     gpio.GPIO_Speed = GPIO_Speed_2MHz;
+    gpio.GPIO_Mode = GPIO_Mode_AF_PP;
 
     for (int i = 0; i < 3; i++) {
         gpio.GPIO_Pin = LED_PINS[i];
         gpio.GPIO_Mode = GPIO_Mode_Out_OD;
         GPIO_Init(LED_GPIO[i], &gpio);
-
-        GPIO_WriteBit(LED_GPIO[i], LED_PINS[i], Bit_SET); // turn off (active low)
     }
 
-    //
     InitializePresenceIndicator();
-    EnableTimerInterrupt();
-}
-
-extern "C" void TIM2_IRQHandler() {
-    if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
-        if (flashlightStatus) {
-            for (int i = 0; i < 3; i++)
-                LED_GPIO[i]->BRR = LED_PINS[i];
-        } else if (presenceStatus) {
-            LED_GPIO[LED_GREEN]->BRR = LED_PINS[LED_GREEN];
-            LED_GPIO[LED_GREEN]->BSRR = LED_PINS[LED_GREEN];
-        }
-        TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-        //GPIO_ReadOutputDataBit()
-    }
 }
 
 void notifyAboutError(DEVICE_ERROR error) {
-    GPIO_WriteBit(LED_GPIO[LED_RED], LED_PINS[LED_RED], Bit_RESET);
+    //GPIO_WriteBit(LED_GPIO[LED_RED], LED_PINS[LED_RED], Bit_RESET); // TODO
 }
 
 void presenceToggle() {
@@ -88,6 +60,7 @@ void flashlightToggle() {
 }
 
 void flashlightSwitchPower(bool turnOn) { // TODO change flashlightStatus
-    for (int i = 0; i < 3; i++)
-        GPIO_WriteBit(LED_GPIO[i], LED_PINS[i], turnOn ? Bit_RESET : Bit_SET);
+    TIM2->CCR2 = turnOn ? 0xFFFF : 0;
+    TIM2->CCR3 = turnOn ? 0xFFFF : 0;
+    TIM2->CCR4 = turnOn ? 0xFFFF : 0;
 }
