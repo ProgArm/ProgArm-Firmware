@@ -19,9 +19,9 @@
 #include "stm32f10x_gpio.h"
 
 static const uint32_t BLUETOOTH_BAUD = 38400;
-static const uint16_t BLUETOOTH_KEY = GPIO_Pin_3;
+static const uint16_t BLUETOOTH_KEY = GPIO_Pin_8; //TODO use some struct for pins?
 
-static const uint16_t POWER_BLUETOOTH = GPIO_Pin_15;
+static const uint16_t POWER_BLUETOOTH = GPIO_Pin_6; //TODO ^
 
 void configureConnection();
 void bluetoothSwitchPower(bool turnOn);

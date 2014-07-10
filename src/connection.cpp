@@ -154,11 +154,11 @@ uint8_t clientGet() {
 }
 
 void bluetoothSwitchPower(bool turnOn) {
-    GPIO_WriteBit(GPIOA, POWER_BLUETOOTH, turnOn ? Bit_RESET : Bit_SET);
+    GPIO_WriteBit(GPIOC, POWER_BLUETOOTH, turnOn ? Bit_RESET : Bit_SET);
 }
 
 void bluetoothTogglePower() {
-    GPIO_WriteBit(GPIOA, POWER_BLUETOOTH, GPIO_ReadOutputDataBit(GPIOA, POWER_BLUETOOTH) == Bit_SET ? Bit_RESET : Bit_SET);
+    GPIO_WriteBit(GPIOC, POWER_BLUETOOTH, GPIO_ReadOutputDataBit(GPIOC, POWER_BLUETOOTH) == Bit_SET ? Bit_RESET : Bit_SET);
 }
 
 extern "C" void USART1_IRQHandler(void) {
