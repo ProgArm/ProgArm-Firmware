@@ -35,7 +35,7 @@ void configurePeripheralPower() {
 }
 
 void peripheralsSwitchPower(bool turnOn) {
-    GPIO_WriteBit(GPIOB, POWER_PERIPHERALS, turnOn ? Bit_RESET : Bit_SET);
+    GPIO_WriteBit(GPIOC, POWER_PERIPHERALS, turnOn ? Bit_RESET : Bit_SET);
 }
 
 void configureDevice() {
