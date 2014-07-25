@@ -17,15 +17,13 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "stm32f10x_gpio.h"
+#include "progmisc.hpp"
 
 static const uint32_t BLUETOOTH_BAUD = 38400;
-static const uint16_t BLUETOOTH_KEY = GPIO_Pin_8; //TODO use some struct for pins?
-
-static const uint16_t POWER_BLUETOOTH = GPIO_Pin_6; //TODO ^
+static Pin PIN_BLUETOOTH_POWER(GPIOC, GPIO_Pin_6, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
+static Pin PIN_BLUETOOTH_KEY(GPIOA, GPIO_Pin_8, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, true);
 
 void configureConnection();
-void bluetoothSwitchPower(bool turnOn);
-void bluetoothTogglePower();
 
 void processIncomingData();
 

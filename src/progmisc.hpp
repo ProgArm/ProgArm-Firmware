@@ -13,16 +13,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #pragma once
-#include <stdint.h>
-#include <stm32f10x_gpio.h>
-#include "progmisc.hpp"
+#include "stm32f10x_gpio.h"
 
-static const int RING_BUTTON_COUNT = 2;
-extern int lastPress[];
+class Pin {
+public:
+    GPIO_InitTypeDef pin;
+    GPIO_TypeDef* gpio;
+    bool activeHigh;
 
-static Pin PIN_RING_BUTTON_1(GPIOA, GPIO_Pin_0, GPIO_Speed_2MHz, GPIO_Mode_IN_FLOATING, true);
-static Pin PIN_RING_BUTTON_2(GPIOC, GPIO_Pin_1, GPIO_Speed_2MHz, GPIO_Mode_IPU, false);
-
-void configureRing();
-void resetButtons();
-//void buttonRelease();
+    Pin(GPIO_TypeDef* gpio, uint16_t GPIO_Pin, //
+            GPIOSpeed_TypeDef GPIO_Speed, GPIOMode_TypeDef GPIO_Mode, bool activeHigh);
+    //Pin(GPIO_TypeDef* gpio, GPIO_InitTypeDef pin);
+    void init();
+    void turnOn();
+    void turnOff();
+    int toggle();
+};

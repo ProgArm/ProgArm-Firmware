@@ -19,42 +19,28 @@
 #include "ring.hpp"
 #include "vibration.hpp"
 #include "compass.hpp"
-
-void disableUnusedFeatures() {
-    // JTAG pins are used for device peripherals
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-    GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, ENABLE);
-}
-
-void configurePeripheralPower() {
-    GPIO_InitTypeDef gpio;
-    gpio.GPIO_Pin = POWER_PERIPHERALS;
-    gpio.GPIO_Mode = GPIO_Mode_Out_PP;
-    gpio.GPIO_Speed = GPIO_Speed_2MHz;
-    GPIO_Init(GPIOB, &gpio);
-}
-
-void peripheralsSwitchPower(bool turnOn) {
-    GPIO_WriteBit(GPIOC, POWER_PERIPHERALS, turnOn ? Bit_RESET : Bit_SET);
-}
+#include "progmisc.hpp"
 
 void configureDevice() {
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE); // We will need this for sure
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     configureTime();
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE); // We will need this for sure
+    PIN_POWER_MODE.init();
+    PIN_POWER_MODE.turnOn(); // we expect high current when bluetooth is on
+    PIN_POWER_PERIPHERAL.init();
+    PIN_POWER_PORTS.init();
+    PIN_CHARGE.init();
 
-    disableUnusedFeatures();
     configureLed();
-    configurePeripheralPower();
     configureConnection();
     configureRing();
     configureVibration();
 
-    peripheralsSwitchPower(true);
-    bluetoothSwitchPower(true);
+    PIN_POWER_PERIPHERAL.turnOn();
 
     volatile int i;
     for (i = 0; i < 100000; i++)
         ;
-    //configureCompass();
+    configureCompass();
 }

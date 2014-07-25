@@ -35,6 +35,9 @@ volatile int clicks = 0;
 static const int CLICK_TIMEOUT_MILLISECONDS = 500;
 
 void configureRing() {
+    //PIN_RING_BUTTON_1.init();
+    //PIN_RING_BUTTON_2.init();
+
     GPIO_InitTypeDef gpio;
     gpio.GPIO_Speed = GPIO_Speed_2MHz;
 
@@ -45,6 +48,8 @@ void configureRing() {
     gpio.GPIO_Pin = GPIO_Pin_1;
     gpio.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_Init(GPIOC, &gpio);
+
+
 
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
 
@@ -139,11 +144,15 @@ void processInterrupt(int buttonId) {
         if (pressed[buttonId]) { // press
             wasPressed[buttonId] = true;
             //TODO
-            //GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_RESET); // buttonId + 1 is a hack
-            //GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_SET);
+            if (buttonId == 0) {
+                TIM2->CCR2 = 0xFFFF;
+                TIM2->CCR2 = 0;
+            }
+            else if (buttonId == 1) {
+                TIM2->CCR3 = 0xFFFF;
+                TIM2->CCR3 = 0;
+            }
         } else { // release
-            //GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_RESET);
-            //GPIO_WriteBit(LED_GPIO[buttonId + 1], LED_PINS[buttonId + 1], Bit_SET);
             buttonRelease();
         }
         lastPress[buttonId] = milliseconds;
@@ -156,8 +165,8 @@ extern "C" void EXTI0_IRQHandler(void) {
     EXTI_ClearITPendingBit(EXTI_Line0);
 }
 
-extern "C" void EXTI15_10_IRQHandler(void) {
-    if (EXTI_GetITStatus(EXTI_Line12) != RESET)
+extern "C" void EXTI1_IRQHandler(void) {
+    if (EXTI_GetITStatus(EXTI_Line1) != RESET)
         processInterrupt(1);
-    EXTI_ClearITPendingBit(EXTI_Line12);
+    EXTI_ClearITPendingBit(EXTI_Line1);
 }

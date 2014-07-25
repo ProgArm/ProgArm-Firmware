@@ -44,7 +44,7 @@ void processAction(int action) {
     if (!deviceActionsEnabled)
         return;
 
-    if (currentAction != ACTION_NONE) {
+    if (currentAction != ACTION_NONE) { // Multi-command actions
         switch (currentAction) {
         case ACTION_IGNORE:
             ignoreTable[action] = !ignoreTable[action];
@@ -53,7 +53,7 @@ void processAction(int action) {
         default:
             break;
         }
-    } else {
+    } else { // Single command actions
         if (ignoreTable[action]) // this action should be ignored
             return;
         switch (action) {
@@ -70,7 +70,7 @@ void processAction(int action) {
             compassToggle();
             break;
         case INPUT_B:
-            bluetoothTogglePower();
+            PIN_BLUETOOTH_POWER.toggle();
             break;
         default:
             break;

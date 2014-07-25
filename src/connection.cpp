@@ -38,16 +38,13 @@ void NVIC_Configuration(void) {
 }
 
 void configureConnection() {
+    PIN_BLUETOOTH_KEY.init();
+    PIN_BLUETOOTH_POWER.init();
+    PIN_BLUETOOTH_POWER.turnOn();
+
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
     GPIO_InitTypeDef gpio;
-
-    gpio.GPIO_Pin = POWER_BLUETOOTH;
-    gpio.GPIO_Mode = GPIO_Mode_Out_PP;
-    gpio.GPIO_Speed = GPIO_Speed_2MHz;
-    GPIO_Init(GPIOA, &gpio);
-
-    GPIO_StructInit(&gpio);
     // Rx
     gpio.GPIO_Pin = GPIO_Pin_10;
     gpio.GPIO_Mode = GPIO_Mode_IN_FLOATING;
@@ -151,14 +148,6 @@ uint8_t clientGet() {
     while (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET)
         ;
     return (uint8_t) USART_ReceiveData(USART1);
-}
-
-void bluetoothSwitchPower(bool turnOn) {
-    GPIO_WriteBit(GPIOC, POWER_BLUETOOTH, turnOn ? Bit_RESET : Bit_SET);
-}
-
-void bluetoothTogglePower() {
-    GPIO_WriteBit(GPIOC, POWER_BLUETOOTH, GPIO_ReadOutputDataBit(GPIOC, POWER_BLUETOOTH) == Bit_SET ? Bit_RESET : Bit_SET);
 }
 
 extern "C" void USART1_IRQHandler(void) {
