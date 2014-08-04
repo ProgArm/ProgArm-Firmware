@@ -20,6 +20,7 @@
 #include "vibration.hpp"
 #include "compass.hpp"
 #include "progmisc.hpp"
+#include "beeper.hpp"
 
 void configureDevice() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE); // We will need this for sure
@@ -36,6 +37,7 @@ void configureDevice() {
     configureConnection();
     configureRing();
     configureVibration();
+    configureBeeper();
 
     PIN_POWER_PERIPHERAL.turnOn();
 

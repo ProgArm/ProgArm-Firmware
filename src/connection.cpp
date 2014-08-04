@@ -86,6 +86,8 @@ int reserveBufferPart(int neededSize) {
     __disable_irq();
     int returnPosition = outputBufferTail;
     outputBufferTail += neededSize;
+    if (outputBufferTail >= OUTPUT_BUFFER_SIZE)
+        outputBufferTail -= OUTPUT_BUFFER_SIZE;
     __enable_irq();
     return returnPosition;
 }
@@ -119,6 +121,7 @@ void printSensor(uint8_t sensor, const char* str) {
             location = 0;
         outputBuffer[location] = str[i];
     }
+    processOutgoingData();
 }
 
 void print(const char* str) {

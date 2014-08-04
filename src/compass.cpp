@@ -20,6 +20,7 @@ void updateCompass() {
         int16_t compass[3];
         HMC5883L_GetHeading(compass);
         sprintf(buffer, "%d\t%d\t%d\n", compass[0], compass[1], compass[2]);
-        printSensor('C', buffer);
+        //printSensor('C', buffer);
+        print(buffer);
     }
 }
