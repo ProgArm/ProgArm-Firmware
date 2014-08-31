@@ -28,6 +28,7 @@ volatile bool pressed[RING_BUTTON_COUNT] = { };
 volatile bool wasPressed[RING_BUTTON_COUNT] = { };
 int lastPress[RING_BUTTON_COUNT] = { };
 Notification* pressNotifications[RING_BUTTON_COUNT] = { };
+Notification* buttonsResetNotification;
 
 static const int DEBOUNCE_MILLISECONDS = 10;
 static const int CLICK_SHORT_MILLISECONDS = 50;
@@ -82,6 +83,8 @@ void configureRing() {
     pressNotifications[1] = new Notification(0, 0, 0x00FF, 1000, 5);
     for (auto &curNotification : pressNotifications)
         addNotification(curNotification);
+    buttonsResetNotification = new Notification(0x00FF, 0, 0, 1000, 30);
+    addNotification(buttonsResetNotification);
 }
 
 void resetButtons() {
@@ -89,8 +92,7 @@ void resetButtons() {
         return; // no reset needed
 
     if (clicks != 0) {
-        //LED_GPIO[LED_GREEN]->BRR = LED_PINS[LED_GREEN]; //TODO
-        //LED_GPIO[LED_GREEN]->BSRR = LED_PINS[LED_GREEN];
+        buttonsResetNotification->turnOn();
         for (int i = 0; i < RING_BUTTON_COUNT; i++) {
             pressed[i] = false;
             wasPressed[i] = false;
@@ -143,8 +145,6 @@ void buttonRelease() { // XXX it is meant to work with two buttons only, add sup
 
 void processInterrupt(int buttonId) {
     int delta = milliseconds - lastPress[buttonId];
-    if (milliseconds == 0)
-        ; //GPIO_WriteBit(LED_GPIO[0], LED_PINS[0], Bit_RESET); // TODO
     if (delta > DEBOUNCE_MILLISECONDS) {
         pressed[buttonId] = !pressed[buttonId];
         if (pressed[buttonId]) { // press
