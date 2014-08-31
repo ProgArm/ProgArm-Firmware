@@ -39,19 +39,8 @@ volatile int clicks = 0;
 static const int CLICK_TIMEOUT_MILLISECONDS = 500;
 
 void configureRing() {
-    //PIN_RING_BUTTON_1.init();
-    //PIN_RING_BUTTON_2.init();
-
-    GPIO_InitTypeDef gpio;
-    gpio.GPIO_Speed = GPIO_Speed_2MHz;
-
-    gpio.GPIO_Pin = GPIO_Pin_0;
-    gpio.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOA, &gpio);
-
-    gpio.GPIO_Pin = GPIO_Pin_1;
-    gpio.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_Init(GPIOC, &gpio);
+    PIN_RING_BUTTON_1.init();
+    PIN_RING_BUTTON_2.init();
 
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
 
