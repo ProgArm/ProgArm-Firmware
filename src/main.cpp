@@ -16,12 +16,13 @@
 #include "ring.hpp"
 #include "connection.hpp"
 #include "indicator.hpp"
-#include "stdio.h"
-#include <stdlib.h>
 #include "compass.hpp"
 #include "stm32f10x_pwr.h"
 #include "timing.hpp"
+#include "notificationManager.hpp"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <misc.h>
 #include <algorithm>
 
@@ -33,10 +34,11 @@ int main(void) {
         resetButtons();
         processIncomingData();
         updateCompass();
+        updateNotification();
         count++;
 
         if (milliseconds - std::max(lastPress[0], lastPress[1]) > 1000) {
-            __WFI();
+            //__WFI(); // TODO
             //PWR_EnterSTANDBYMode();
             //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
         }

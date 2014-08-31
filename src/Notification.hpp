@@ -13,16 +13,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #pragma once
+#include <stdbool.h>
+#include <stdint.h>
 
-#include <stm32f10x_gpio.h>
+class Notification {
+public:
+    uint16_t color[3];
+    int priority;
+    int duration;
+    int curDuration = 0;bool turnedOn = false;
 
-enum LED_COLOR {
-    LED_RED = 0, LED_GREEN = 1, LED_BLUE = 2
+    Notification(uint16_t r, uint16_t g, uint16_t b, int priority = 0, int duration = -1); //
+    bool update();
+    void turnOn();
+    void turnOff();
+    void toggle();
+    void pause();
+    void play();
+protected:
+    int lastUpdate = 0;
 };
-
-void configureLed();
-
-void presenceToggle();
-void flashlightToggle();
-void setLedValues(uint16_t r, uint16_t g, uint16_t b);
-

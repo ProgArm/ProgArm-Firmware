@@ -12,17 +12,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
 #pragma once
+#include <vector>
+#include "Notification.hpp"
 
-#include <stm32f10x_gpio.h>
+extern Notification* activeNotification;
+extern std::vector<Notification*> notifications;
 
-enum LED_COLOR {
-    LED_RED = 0, LED_GREEN = 1, LED_BLUE = 2
-};
-
-void configureLed();
-
-void presenceToggle();
-void flashlightToggle();
-void setLedValues(uint16_t r, uint16_t g, uint16_t b);
-
+void addNotification(Notification* newNotification);
+void updateNotification();
+void chooseMostPrioritizedNotification();

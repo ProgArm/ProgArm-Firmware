@@ -21,10 +21,13 @@
 #include "timing.hpp"
 #include "connection.hpp"
 #include "actions.hpp"
+#include "Notification.hpp"
+#include "notificationManager.hpp"
 
 volatile bool pressed[RING_BUTTON_COUNT] = { };
 volatile bool wasPressed[RING_BUTTON_COUNT] = { };
 int lastPress[RING_BUTTON_COUNT] = { };
+Notification* pressNotifications[RING_BUTTON_COUNT] = { };
 
 static const int DEBOUNCE_MILLISECONDS = 10;
 static const int CLICK_SHORT_MILLISECONDS = 50;
@@ -48,8 +51,6 @@ void configureRing() {
     gpio.GPIO_Pin = GPIO_Pin_1;
     gpio.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_Init(GPIOC, &gpio);
-
-
 
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
 
@@ -76,6 +77,11 @@ void configureRing() {
     EXTI_Init(&EXTI_InitStructure);
     NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
     NVIC_Init(&NVIC_InitStructure);
+
+    pressNotifications[0] = new Notification(0, 0x00FF, 0, 1000, 5);
+    pressNotifications[1] = new Notification(0, 0, 0x00FF, 1000, 5);
+    for (auto &curNotification : pressNotifications)
+        addNotification(curNotification);
 }
 
 void resetButtons() {
@@ -143,15 +149,7 @@ void processInterrupt(int buttonId) {
         pressed[buttonId] = !pressed[buttonId];
         if (pressed[buttonId]) { // press
             wasPressed[buttonId] = true;
-            //TODO
-            if (buttonId == 0) {
-                TIM2->CCR2 = 0xFFFF;
-                TIM2->CCR2 = 0;
-            }
-            else if (buttonId == 1) {
-                TIM2->CCR3 = 0xFFFF;
-                TIM2->CCR3 = 0;
-            }
+            pressNotifications[buttonId]->turnOn();
         } else { // release
             buttonRelease();
         }
