@@ -39,13 +39,11 @@ int main(void) {
         updateNotification();
         count++;
 
-        if (milliseconds - std::max(lastPress[0], lastPress[1]) > 1000) {
-            setWakeTimer();
-            //setVibration(0x3333);
-            __WFI();
-            //setVibration(0);
-            //PWR_EnterSTANDBYMode();
-            //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-        }
+        setWakeTimer();
+        //setVibration(0);
+        __WFI(); // TODO LED PWM wakes us up? What the hell?
+        //setVibration(0xFFFF);
+        //PWR_EnterSTANDBYMode();
+        //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
     }
 }

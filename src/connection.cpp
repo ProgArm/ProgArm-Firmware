@@ -21,7 +21,7 @@
 #include "vibration.hpp"
 
 const int OUTPUT_BUFFER_SIZE = 500;
-uint8_t outputBuffer[OUTPUT_BUFFER_SIZE] = { }; // TODO separate buffer into class?
+uint8_t outputBuffer[OUTPUT_BUFFER_SIZE] = { }; // TODO why bother? Just use queue!
 int outputBufferHead = 0;
 int outputBufferTail = 0;
 
