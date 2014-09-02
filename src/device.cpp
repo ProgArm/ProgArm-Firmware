@@ -13,6 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #include "device.hpp"
+#include "wakeup.hpp"
 #include "timing.hpp"
 #include "connection.hpp"
 #include "indicator.hpp"
@@ -33,6 +34,7 @@ void configureDevice() {
     PIN_POWER_PORTS.init();
     PIN_CHARGE.init();
 
+    configureWakeups();
     configureLed();
     configureConnection();
     configureRing();

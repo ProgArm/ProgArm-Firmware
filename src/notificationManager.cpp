@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #include "notificationManager.hpp"
 #include <cstddef>
+#include <stm32f10x_tim.h>
+#include "wakeup.hpp"
 
 Notification* activeNotification;
 std::vector<Notification*> notifications;
@@ -39,8 +41,10 @@ void chooseMostPrioritizedNotification() {
     activeNotification = NULL;
     for (auto &curNotification : notifications) // XXX not the most efficient way, but it is good enough for now
         if (curNotification->turnedOn)
-            if (activeNotification == NULL || activeNotification->priority <= curNotification->priority)
+            if (activeNotification == NULL || activeNotification->priority <= curNotification->priority) {
                 activeNotification = curNotification;
+                addWakeUp(activeNotification->curDuration);
+            }
     if (activeNotification != NULL)
         activeNotification->play();
 }
