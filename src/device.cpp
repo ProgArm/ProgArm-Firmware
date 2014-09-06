@@ -22,6 +22,8 @@
 #include "compass.hpp"
 #include "progmisc.hpp"
 #include "beeper.hpp"
+#include "i2c.hpp"
+#include "LTC2942.hpp"
 
 void configureDevice() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE); // We will need this for sure
@@ -46,5 +48,10 @@ void configureDevice() {
     volatile int i;
     for (i = 0; i < 100000; i++)
         ;
-    configureCompass();
+    //configureCompass();
+
+    I2C_Setup();
+    for (i = 0; i < 100000; i++)
+        ;
+    LTC2942_Configure();
 }

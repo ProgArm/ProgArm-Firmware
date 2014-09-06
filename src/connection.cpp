@@ -16,10 +16,12 @@
 #include <stm32f10x_usart.h>
 #include <stm32f10x_spi.h>
 #include <queue>
+#include <stdarg.h>
 
 #include "actions.hpp"
 #include "connection.hpp"
 #include "vibration.hpp"
+#include "LTC2942.hpp"
 
 std::queue<uint8_t> outputBuffer;
 
@@ -101,6 +103,17 @@ void print(const char* str) {
     processOutgoingData();
 }
 
+void print(int n_args, ...) {
+    va_list ap;
+    va_start(ap, n_args);
+    __disable_irq();
+    for (int i = 1; i <= n_args; i++)
+        outputBuffer.push(va_arg(ap, int));
+    __enable_irq();
+    va_end(ap);
+    processOutgoingData();
+}
+
 void printAction(uint8_t action) {
     __disable_irq();
     outputBuffer.push('L');
@@ -124,6 +137,16 @@ uint8_t clientGet() {
     return (uint8_t) USART_ReceiveData(USART1);
 }
 
+void sendBatteryData() {
+    int charge = LTC2942_GetBatteryCharge();
+    int voltage = LTC2942_GetBatteryVoltage();
+    volatile int i;
+    for (i = 0; i < 10000; i++)
+        ;
+    int temperature = LTC2942_GetBatteryTemperature();
+    print(7, 'B', charge >> 8, charge & 0xFF, voltage >> 8, voltage & 0xFF, temperature >> 8, temperature & 0xFF);
+}
+
 void processIncomingData() { // TODO use interrupts to process data
     if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET)
         return; // no data to read
@@ -131,7 +154,10 @@ void processIncomingData() { // TODO use interrupts to process data
     uint8_t received = (uint8_t) USART_ReceiveData(USART1);
     switch (received) {
     case 'p':
-        //clientPut('P'); // TODO
+        print("P");
+        break;
+    case 'b':
+        sendBatteryData();
         break;
     case 'E':
         changeState(clientGet()); // XXX what if client disconnects exactly at this moment?
