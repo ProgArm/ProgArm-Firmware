@@ -30,6 +30,5 @@ void processIncomingData();
 void printAction(uint8_t action);
 void print(const char* str);
 void printPlain(const char* str);
-void printSensor(uint8_t sensor, const char* str);
 void clientPut(uint8_t ch);
 uint8_t clientGet();

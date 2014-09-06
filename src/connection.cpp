@@ -15,15 +15,13 @@
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_usart.h>
 #include <stm32f10x_spi.h>
+#include <queue>
 
 #include "actions.hpp"
 #include "connection.hpp"
 #include "vibration.hpp"
 
-const int OUTPUT_BUFFER_SIZE = 500;
-uint8_t outputBuffer[OUTPUT_BUFFER_SIZE] = { }; // TODO why bother? Just use queue!
-int outputBufferHead = 0;
-int outputBufferTail = 0;
+std::queue<uint8_t> outputBuffer;
 
 void NVIC_Configuration(void) {
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -71,100 +69,59 @@ void configureConnection() {
     NVIC_Configuration();
 }
 
-void processOutgoingData() {
-    if (outputBufferHead != outputBufferTail)
+void processOutgoingData() { // call this every time you push to outputBuffer
+    if (!outputBuffer.empty())
         if (USART_GetFlagStatus(USART1, USART_FLAG_TXE)) {
-            USART_SendData(USART1, outputBuffer[outputBufferHead++]);
-            if (outputBufferHead >= OUTPUT_BUFFER_SIZE)
-                outputBufferHead = 0;
+            USART_SendData(USART1, outputBuffer.front());
+            outputBuffer.pop();
         }
-    if (outputBufferHead != outputBufferTail)
+    if (!outputBuffer.empty())
         USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
 }
 
-int reserveBufferPart(int neededSize) {
+void printData(char startChar, const char* str) {
     __disable_irq();
-    int returnPosition = outputBufferTail;
-    outputBufferTail += neededSize;
-    if (outputBufferTail >= OUTPUT_BUFFER_SIZE)
-        outputBufferTail -= OUTPUT_BUFFER_SIZE;
+    outputBuffer.push(startChar);
+    for (int curPos = 0; str[curPos]; curPos++)
+        outputBuffer.push(str[curPos]);
+    outputBuffer.push('\0');
     __enable_irq();
-    return returnPosition;
-}
-
-void printPlain(const char* str) {
-    int size = 0;
-    for (; str[size]; size++)
-        ;
-
-    int start = reserveBufferPart(size + 2); // 'T' + str + \0
-    outputBuffer[start] = 'T';
-    int location = start;
-    for (int i = 0; i < size + 1; i++) {
-        if (++location >= OUTPUT_BUFFER_SIZE)
-            location = 0;
-        outputBuffer[location] = str[i];
-    }
-}
-
-void printSensor(uint8_t sensor, const char* str) {
-    int size = 0; // TODO !!! copy-pasted code from printPlain
-    for (; str[size]; size++)
-        ;
-
-    int start = reserveBufferPart(size + 3); // 'C' + '?' + str + \0
-    outputBuffer[start] = 'T';
-    outputBuffer[start + 1] = sensor;
-    int location = start + 1;
-    for (int i = 0; i < size + 1; i++) {
-        if (++location >= OUTPUT_BUFFER_SIZE)
-            location = 0;
-        outputBuffer[location] = str[i];
-    }
     processOutgoingData();
 }
 
+void printPlain(const char* str) {
+    printData('T', str);
+}
+
 void print(const char* str) {
-    int size = 0; // TODO !!! copy-pasted code from printPlain
-    for (; str[size]; size++)
-        ;
-
-    int start = reserveBufferPart(size);
-    int location = start;
-    for (int i = 0; i < size; i++) {
-        outputBuffer[location++] = str[i];
-        if (location >= OUTPUT_BUFFER_SIZE)
-            location = 0;
-    }
-
+    __disable_irq();
+    for (int curPos = 0; str[curPos]; curPos++)
+        outputBuffer.push(str[curPos]);
+    __enable_irq();
     processOutgoingData();
 }
 
 void printAction(uint8_t action) {
-    int location = reserveBufferPart(2);
-    outputBuffer[location] = 'L';
-    outputBuffer[location + 1] = action;
+    __disable_irq();
+    outputBuffer.push('L');
+    outputBuffer.push(action);
+    __enable_irq();
     processOutgoingData();
+}
+
+extern "C" void USART1_IRQHandler(void) {
+    if (USART_GetFlagStatus(USART1, USART_FLAG_TXE)) {
+        USART_SendData(USART1, outputBuffer.front());
+        outputBuffer.pop();
+        if (outputBuffer.empty())
+            USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
+    }
 }
 
 uint8_t clientGet() {
     while (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET)
         ;
     return (uint8_t) USART_ReceiveData(USART1);
-}
-
-extern "C" void USART1_IRQHandler(void) {
-    if (USART_GetFlagStatus(USART1, USART_FLAG_TXE)) { // copy-pasted from processOutgoingData
-        USART_SendData(USART1, outputBuffer[outputBufferHead++]); // XXX what if that buffer was not filled yet?
-        if (outputBufferHead >= OUTPUT_BUFFER_SIZE)
-            outputBufferHead = 0;
-
-        if (outputBufferHead == outputBufferTail)
-            USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
-    }
-    //outputBufferTail++;
-    //USART_ClearITPendingBit(USART1,USART_IT_TXE);
-    //processOutgoingData();
 }
 
 void processIncomingData() { // TODO use interrupts to process data

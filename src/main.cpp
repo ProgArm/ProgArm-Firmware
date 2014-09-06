@@ -41,7 +41,7 @@ int main(void) {
 
         setWakeTimer();
         //setVibration(0);
-        __WFI(); // TODO LED PWM wakes us up? What the hell?
+        __WFI(); // TODO LED PWM wakes us up? What the hell?jq
         //setVibration(0xFFFF);
         //PWR_EnterSTANDBYMode();
         //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
