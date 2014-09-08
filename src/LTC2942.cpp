@@ -21,7 +21,7 @@
 
 void LTC2942_Configure() {
     // Defaults: ADC Mode [00], Prescaler [111], AL/CC Configure [10], Shutdown [0]
-    I2C_Write(LTC2942_ADDRESS7, LTC2942_REG_CONTROL, 0b11111100); // temperature and voltage will be available after 10 ms
+    I2C_Write(LTC2942_ADDRESS7, LTC2942_REG_CONTROL, 0b11101100); // temperature and voltage will be available after 10 ms
 }
 
 u16 LTC2942_GetBatteryCharge() {
