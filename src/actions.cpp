@@ -17,6 +17,7 @@
 #include "actions.hpp"
 #include "compass.hpp"
 #include "connection.hpp"
+#include "LTC2942.hpp"
 
 int currentAction = ACTION_NONE;
 bool deviceActionsEnabled = true;
@@ -71,6 +72,9 @@ void processAction(int action) {
             break;
         case INPUT_B:
             PIN_BLUETOOTH_POWER.toggle();
+            break;
+        case INPUT_Y:
+            LTC2942_ResetCharge();
             break;
         default:
             break;

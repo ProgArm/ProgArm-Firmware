@@ -35,3 +35,11 @@ u16 LTC2942_GetBatteryVoltage() {
 u16 LTC2942_GetBatteryTemperature() {
     return I2C_ReceiveMany(LTC2942_ADDRESS7, LTC2942_REG_TEMPERATURE_MSB, 2);
 }
+
+void LTC2942_ResetCharge() {
+    // Defaults: ADC Mode [00], Prescaler [111], AL/CC Configure [10], Shutdown [0]
+    I2C_Write(LTC2942_ADDRESS7, LTC2942_REG_CONTROL, 0b00101101);
+    I2C_Write(LTC2942_ADDRESS7, LTC2942_REG_ACCUMULATED_CHARGE_MSB, 0xEE); // EEF8 with prescaler=32 is about 1300 mAh
+    I2C_Write(LTC2942_ADDRESS7, LTC2942_REG_ACCUMULATED_CHARGE_LSB, 0xF8);
+    LTC2942_Configure();
+}
