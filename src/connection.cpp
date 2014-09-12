@@ -165,6 +165,9 @@ void processIncomingData() { // TODO use interrupts to process data
     case 'V':
         setVibration(0xFFFF / 255 * clientGet());
         break;
+    case 'l':
+        processAction(clientGet());
+        break;
     default:
         char buffer[60]; // XXX use some existing buffer instead? // NO, use outgoing buffer when output becomes interrupt-driven
         sprintf(buffer, "Error: Skipping unexpected byte: %d\n", received);
