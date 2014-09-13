@@ -27,8 +27,7 @@ void configureConnection();
 
 void processIncomingData();
 
-void printAction(uint8_t action);
+void printAction(u8 action);
 void print(const char* str);
 void printPlain(const char* str);
-void clientPut(uint8_t ch);
-uint8_t clientGet();
+void clientPut(u8 ch);

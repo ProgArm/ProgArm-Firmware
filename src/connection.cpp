@@ -23,7 +23,8 @@
 #include "vibration.hpp"
 #include "LTC2942.hpp"
 
-std::queue<uint8_t> outputBuffer;
+std::queue<u8> outputBuffer;
+std::queue<u8> inputBuffer;
 
 void NVIC_Configuration(void) {
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -67,7 +68,7 @@ void configureConnection() {
     USART_Init(USART1, &USART_InitStructure);
     USART_Cmd(USART1, ENABLE);
 
-    //USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
     NVIC_Configuration();
 }
 
@@ -114,7 +115,7 @@ void print(int n_args, ...) {
     processOutgoingData();
 }
 
-void printAction(uint8_t action) {
+void printAction(u8 action) {
     __disable_irq();
     outputBuffer.push('L');
     outputBuffer.push(action);
@@ -123,18 +124,16 @@ void printAction(uint8_t action) {
 }
 
 extern "C" void USART1_IRQHandler(void) {
-    if (USART_GetFlagStatus(USART1, USART_FLAG_TXE)) {
+    if (USART_GetFlagStatus(USART1, USART_FLAG_TXE) && !outputBuffer.empty()) {
         USART_SendData(USART1, outputBuffer.front());
         outputBuffer.pop();
         if (outputBuffer.empty())
             USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
     }
-}
-
-uint8_t clientGet() {
-    while (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET)
-        ;
-    return (uint8_t) USART_ReceiveData(USART1);
+    if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == SET) {
+        inputBuffer.push(USART_ReceiveData(USART1));
+        processIncomingData();
+    }
 }
 
 void sendBatteryData() {
@@ -147,30 +146,41 @@ void sendBatteryData() {
     print(7, 'B', charge >> 8, charge & 0xFF, voltage >> 8, voltage & 0xFF, temperature >> 8, temperature & 0xFF);
 }
 
-void processIncomingData() { // TODO use interrupts to process data
-    if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET)
-        return; // no data to read
-
-    uint8_t received = (uint8_t) USART_ReceiveData(USART1);
-    switch (received) {
+void processIncomingData() { // TODO make it shorter
+    switch (inputBuffer.front()) {
     case 'p':
+        inputBuffer.pop();
         print("P");
         break;
     case 'b':
+        inputBuffer.pop();
         sendBatteryData();
         break;
     case 'E':
-        changeState(clientGet()); // XXX what if client disconnects exactly at this moment?
+        if (inputBuffer.size() < 2)
+            break;
+        inputBuffer.pop();
+        changeState(inputBuffer.front()); // XXX what if client disconnects exactly at this moment?
+        inputBuffer.pop();
         break;
     case 'V':
-        setVibration(0xFFFF / 255 * clientGet());
+        if (inputBuffer.size() < 2)
+            break;
+        inputBuffer.pop();
+        setVibration(0xFFFF / 255 * inputBuffer.front());
+        inputBuffer.pop();
         break;
     case 'l':
-        processAction(clientGet());
+        if (inputBuffer.size() < 2)
+            break;
+        inputBuffer.pop();
+        processAction(inputBuffer.front());
+        inputBuffer.pop();
         break;
     default:
         char buffer[60]; // XXX use some existing buffer instead? // NO, use outgoing buffer when output becomes interrupt-driven
-        sprintf(buffer, "Error: Skipping unexpected byte: %d\n", received);
+        sprintf(buffer, "Error: Skipping unexpected byte: %d\n", inputBuffer.front());
+        inputBuffer.pop();
         printPlain(buffer);
         break;
     }

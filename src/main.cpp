@@ -34,7 +34,6 @@ int main(void) {
 
     while (1) {
         resetButtons();
-        processIncomingData();
         updateCompass();
         updateNotification();
         count++;
