@@ -31,10 +31,10 @@ void compassToggle() {
 char buffer[50];
 void updateCompass() {
     if (indicationEnabled) {
-        int16_t compass[3];
-        HMC5883L_GetHeading(compass);
-        sprintf(buffer, "%d\t%d\t%d\n", compass[0], compass[1], compass[2]);
+        //int16_t compass[3];
+        //HMC5883L_GetHeading(compass);
+        //sprintf(buffer, "%d\t%d\t%d\n", compass[0], compass[1], compass[2]);
         //printSensor('C', buffer);
-        print(buffer);
+        //print(buffer);
     }
 }
