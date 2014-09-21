@@ -46,7 +46,7 @@ void configureLed() {
     addNotification(flashlight);
 }
 
-void setLedValues(uint16_t r, uint16_t g, uint16_t b) {
+void setLedValues(u16 r, u16 g, u16 b) {
     TIM2->CCR2 = r;
     TIM2->CCR3 = g;
     TIM2->CCR4 = b;

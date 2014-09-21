@@ -19,6 +19,7 @@
 #include "indicator.hpp"
 #include "ring.hpp"
 #include "vibration.hpp"
+#include "accelgyro.hpp"
 #include "compass.hpp"
 #include "progmisc.hpp"
 #include "beeper.hpp"
@@ -43,15 +44,17 @@ void configureDevice() {
     configureVibration();
     configureBeeper();
 
-    PIN_POWER_PERIPHERAL.turnOn();
+    PIN_POWER_PERIPHERAL.turnOff();
+    PIN_POWER_PORTS.turnOff();
 
     volatile int i;
     for (i = 0; i < 100000; i++)
         ;
     //configureCompass();
-
+    configureAccelgyro();
+    /*
     I2C_Setup();
     for (i = 0; i < 100000; i++)
         ;
-    LTC2942_Configure();
+    LTC2942_Configure();*/
 }

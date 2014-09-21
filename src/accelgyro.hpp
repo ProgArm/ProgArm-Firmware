@@ -12,33 +12,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-#include "lib/HMC5883L.h"
-#include "compass.hpp"
-#include "connection.hpp"
-#include "device.hpp"
-#include <stdio.h>
+#pragma once
 
-bool compasOutput = false;
-
-void configureCompass() {
-    HMC5883L_I2C_Init();
-    HMC5883L_Initialize();
-}
-
-void compassToggle() {
-    compasOutput = !compasOutput;
-    if (compasOutput)
-        PIN_POWER_PERIPHERAL.turnOn();
-    else
-        PIN_POWER_PERIPHERAL.turnOff(); // XXX
-}
-
-void updateCompass() {
-    char buffer[50];
-    if (compasOutput) {
-        int16_t compass[3];
-        HMC5883L_GetHeading(compass);
-        sprintf(buffer, "Compass: %d\t%d\t%d\n", compass[0], compass[1], compass[2]);
-        printPlain(buffer);
-    }
-}
+void configureAccelgyro();
+void accelgyroToggle();
+void updateAccelgyro();

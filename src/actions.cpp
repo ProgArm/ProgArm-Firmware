@@ -16,6 +16,7 @@
 #include "indicator.hpp"
 #include "actions.hpp"
 #include "compass.hpp"
+#include "accelgyro.hpp"
 #include "connection.hpp"
 #include "LTC2942.hpp"
 
@@ -69,6 +70,7 @@ void processAction(int action) {
             break;
         case INPUT_O:
             compassToggle();
+            accelgyroToggle();
             break;
         case INPUT_B:
             PIN_BLUETOOTH_POWER.toggle();

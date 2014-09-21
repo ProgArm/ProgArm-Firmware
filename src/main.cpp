@@ -17,6 +17,7 @@
 #include "connection.hpp"
 #include "indicator.hpp"
 #include "compass.hpp"
+#include "accelgyro.hpp"
 #include "vibration.hpp"
 #include "wakeup.hpp"
 #include "stm32f10x_pwr.h"
@@ -34,13 +35,16 @@ int main(void) {
 
     while (1) {
         resetButtons();
-        updateCompass();
+        if (count % 10 == 0) {
+            //updateCompass();
+            updateAccelgyro();
+        }
         updateNotification();
         count++;
 
         setWakeTimer();
         //setVibration(0);
-        __WFI(); // TODO LED PWM wakes us up? What the hell?jq
+        __WFI(); // TODO LED PWM wakes us up? What the hell?
         //setVibration(0xFFFF);
         //PWR_EnterSTANDBYMode();
         //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
