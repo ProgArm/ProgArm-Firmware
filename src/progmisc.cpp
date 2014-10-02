@@ -44,3 +44,11 @@ int Pin::toggle() {
     GPIO_WriteBit(gpio, pin.GPIO_Pin, currentState == Bit_SET ? Bit_RESET : Bit_SET);
     return currentState;
 }
+
+u16 Pin::read() {
+    // TODO assert that the pin is in input mode?
+    if (activeHigh)
+        return GPIO_ReadInputDataBit(gpio, pin.GPIO_Pin);
+    else
+        return GPIO_ReadInputDataBit(gpio, pin.GPIO_Pin) == Bit_SET ? Bit_RESET : Bit_SET;
+}

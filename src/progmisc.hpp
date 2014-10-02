@@ -28,4 +28,5 @@ public:
     void turnOn();
     void turnOff();
     int toggle();
+    u16 read();
 };
