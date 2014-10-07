@@ -14,11 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #pragma once
 
+#include "Notification.hpp"
 #include <stm32f10x_gpio.h>
 
 enum LED_COLOR {
     LED_RED = 0, LED_GREEN = 1, LED_BLUE = 2
 };
+
+extern Notification* idleLight;
+extern Notification* flashlight;
 
 void configureLed();
 
