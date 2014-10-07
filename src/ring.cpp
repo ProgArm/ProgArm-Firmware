@@ -72,7 +72,7 @@ void configureRing() {
     pressNotifications[1] = new Notification(0, 0, 0x00FF, 1000, 5);
     for (auto &curNotification : pressNotifications)
         addNotification(curNotification);
-    buttonsResetNotification = new Notification(0x00FF, 0, 0, 1000, 30);
+    buttonsResetNotification = new Notification(0x00FF, 0, 0, 1000, 10);
     addNotification(buttonsResetNotification);
 }
 
