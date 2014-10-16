@@ -27,7 +27,8 @@
 #include "LTC2942.hpp"
 
 void configureDevice() {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE); // We will need this for sure
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB //
+            | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE); // We will need this for sure
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     configureTime();
 
@@ -44,17 +45,17 @@ void configureDevice() {
     configureVibration();
     configureBeeper();
 
-    PIN_POWER_PERIPHERAL.turnOff();
-    PIN_POWER_PORTS.turnOff();
+    PIN_POWER_PERIPHERAL.turnOn();
+    PIN_POWER_PORTS.turnOn();
 
     volatile int i;
     for (i = 0; i < 100000; i++)
         ;
     //configureCompass();
-    configureAccelgyro();
-    /*
+    //configureAccelgyro();
+
     I2C_Setup();
     for (i = 0; i < 100000; i++)
         ;
-    LTC2942_Configure();*/
+    LTC2942_Configure();
 }
