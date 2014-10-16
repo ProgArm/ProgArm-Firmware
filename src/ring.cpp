@@ -23,6 +23,7 @@
 #include "actions.hpp"
 #include "Notification.hpp"
 #include "notificationManager.hpp"
+#include "keys.hpp"
 
 volatile bool pressed[RING_BUTTON_COUNT] = { };
 volatile bool wasPressed[RING_BUTTON_COUNT] = { };
@@ -124,8 +125,7 @@ void buttonRelease() { // XXX it is meant to work with two buttons only, add sup
     wasPressed[1] = false;
 
     if (clicks == 2) {
-        processAction(action);
-        printAction(action);
+        processKey(action);
         action = 0;
         clicks = 0;
     } else
