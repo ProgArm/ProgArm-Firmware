@@ -17,8 +17,28 @@
 
 #include "actions.hpp"
 #include "connection.hpp"
+#include "input_codes.hpp"
+
+bool shiftPressed = false;
+bool shiftHolded = false;
+bool fnPressed = false;
+bool fnHolded = false;
 
 void processKey(u16 action) {
+    if (action == INPUT_Shift) {
+        if (shiftHolded) {
+            shiftHolded = false;
+            shiftPressed = false;
+        } else {
+            if (shiftPressed) // double press
+                shiftHolded = true;
+            shiftPressed = true;
+        }
+    } else if (shiftPressed) {
+        action += 100; // shift keys are shifted by 100. (this might change in the future)
+        if (!shiftHolded)
+            shiftPressed = false;
+    }
     processAction(action);
     printAction(action);
 }
