@@ -23,6 +23,7 @@
 #include "stm32f10x_pwr.h"
 #include "timing.hpp"
 #include "notificationManager.hpp"
+#include "i2c.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,16 +35,16 @@ int main(void) {
     int count = 0;
 
     while (1) {
-        resetButtons();
-        if (count % 10 == 0) {
-            //updateCompass();
-            //updateAccelgyro();
-        }
-        updateNotification();
         count++;
+        resetButtons();
+        //if (count % 10 == 0) {
+        //updateCompass();
+        //updateAccelgyro();
+        //}
+        updateNotification();
 
-        setWakeTimer();
-        __WFI(); // TODO LED PWM wakes us up? What the hell?
+        //setWakeTimer();
+        //__WFI(); // TODO LED PWM wakes us up? What the hell?
         //PWR_EnterSTANDBYMode();
         //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
     }
