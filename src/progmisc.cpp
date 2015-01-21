@@ -24,7 +24,7 @@ Pin::Pin(GPIO_TypeDef* gpio, uint16_t GPIO_Pin, //
 }
 
 void Pin::init() {
-    GPIO_Init(GPIOC, &pin);
+    GPIO_Init(gpio, &pin);
     if (pin.GPIO_Mode == GPIO_Mode_Out_PP || pin.GPIO_Mode == GPIO_Mode_Out_OD)
         turnOff();
 }

@@ -50,7 +50,6 @@ void setSysClockToPLL() {
     RCC_DeInit(); // RCC system reset(for debug purpose)
 
     RCC_HSEConfig(RCC_HSE_ON); // Enable HSE
-
     HSEStartUpStatus = RCC_WaitForHSEStartUp(); // Wait till HSE is ready
 
     if (HSEStartUpStatus == SUCCESS) {

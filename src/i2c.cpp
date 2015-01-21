@@ -13,6 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #include <stm32f10x_i2c.h>
+#include <stdio.h>
 
 #define I2C_SPEED 10000
 
@@ -97,8 +98,8 @@ u8 I2C_Receive(u8 address, u8 reg) {
 }
 
 // reg should point to the first byte (usually MSB)
-int I2C_ReceiveMany(u8 address, u8 reg, int count) {
-    int out = 0;
+uint I2C_ReceiveMany(u8 address, u8 reg, int count) {
+    uint out = 0;
     ReadStart(address, reg);
     for (int i = 0; i < count; i++) {
         while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))

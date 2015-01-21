@@ -35,32 +35,30 @@ void configureDevice() {
     //PIN_POWER_MODE.init();
     //PIN_POWER_MODE.turnOn(); // we expect high current when bluetooth is on
     //PIN_POWER_PERIPHERAL.init();
-    //PIN_POWER_PORTS.init();
-    //PIN_POWER_PORTS.turnOn();
+    PIN_POWER_PORTS.init();
+    PIN_POWER_PORTS.turnOn();
     //PIN_CHARGE.init();
 
-    //configureWakeups();
-    //configureLed();
-    //configureConnection();
-    //configureRing();
-    //configureVibration();
+    configureWakeups();
+    configureLed();
+    configureConnection();
+    configureRing();
+    configureVibration();
     //configureBeeper();
 
     //PIN_POWER_PERIPHERAL.turnOn();
     //PIN_POWER_PORTS.turnOn();
 
-
     /*volatile int i;
-    for (i = 0; i < 100000; i++)
-        ;
-    //configureCompass();
-    //configureAccelgyro();
-*/
+     for (i = 0; i < 100000; i++)
+     ;
+     //configureCompass();
+     //configureAccelgyro();
+     */
     I2C_Setup();
     volatile int i;
-    for (i = 0; i < 100000; i++) // I2C initialization takes some time
-        ;
-
+    for (i = 0; i < 100000; i++)
+        ; // I2C initialization takes some time
 
     //LTC2942_Configure();
 }

@@ -69,7 +69,7 @@ void configureRing() {
     NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
     NVIC_Init(&NVIC_InitStructure);
 
-    pressNotifications[0] = new Notification(0, 0x00FF, 0, 1000, 5);
+    pressNotifications[0] = new Notification(0, 0, 0x00FF, 1000, 5);
     pressNotifications[1] = new Notification(0, 0, 0x00FF, 1000, 5);
     for (auto &curNotification : pressNotifications)
         addNotification(curNotification);

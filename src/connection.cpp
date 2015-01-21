@@ -39,9 +39,9 @@ void NVIC_Configuration(void) {
 }
 
 void configureConnection() {
-    PIN_BLUETOOTH_KEY.init();
-    PIN_BLUETOOTH_POWER.init();
-    PIN_BLUETOOTH_POWER.turnOn();
+    //PIN_BLUETOOTH_KEY.init();
+    //PIN_BLUETOOTH_POWER.init();
+    //PIN_BLUETOOTH_POWER.turnOn();
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 

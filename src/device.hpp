@@ -23,6 +23,6 @@ static const uint32_t CLOCK_FREQUENCY = 8000000;
 static Pin PIN_CHARGE(GPIOC, GPIO_Pin_3, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false); // XXX it is meant to be input, not output
 static Pin PIN_POWER_MODE(GPIOC, GPIO_Pin_5, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
 static Pin PIN_POWER_PERIPHERAL(GPIOC, GPIO_Pin_7, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
-static Pin PIN_POWER_PORTS(GPIOC, GPIO_Pin_7, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
+static Pin PIN_POWER_PORTS(GPIOB, GPIO_Pin_1, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
 
 void configureDevice();

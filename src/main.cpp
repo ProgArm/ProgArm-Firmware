@@ -43,8 +43,8 @@ int main(void) {
         //}
         updateNotification();
 
-        //setWakeTimer();
-        //__WFI(); // TODO LED PWM wakes us up? What the hell?
+        setWakeTimer();
+        __WFI(); // TODO LED PWM wakes us up? What the hell?
         //PWR_EnterSTANDBYMode();
         //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
     }
