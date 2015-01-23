@@ -12,7 +12,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-#include "lib/MPU6050.h"
 #include "accelgyro.hpp"
 #include "connection.hpp"
 #include "indicator.hpp"
@@ -23,8 +22,8 @@
 bool accelgyroOutput = false;
 
 void configureAccelgyro() {
-    MPU6050_I2C_Init();
-    MPU6050_Initialize();
+    //MPU6050_I2C_Init();
+    //MPU6050_Initialize();
 }
 
 void accelgyroToggle() {
@@ -39,7 +38,7 @@ void updateAccelgyro() {
     //char buffer[50];
     if (accelgyroOutput) {
         s16 accelgyro[6];
-        MPU6050_GetRawAccelGyro(accelgyro);
+        //MPU6050_GetRawAccelGyro(accelgyro);
         setLedValues(abs(accelgyro[0]) / 200, abs(accelgyro[1]) / 200, abs(accelgyro[2]) / 200);
         //setLedValues(abs(accelgyro[3]) / 100, abs(accelgyro[4]) / 100, abs(accelgyro[5]) / 100);
         /*sprintf(buffer, "AccelGyro: %d\t%d\t%d\t%d\t%d\t%d\n", accelgyro[0], accelgyro[1], accelgyro[2],

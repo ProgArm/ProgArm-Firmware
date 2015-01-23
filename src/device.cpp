@@ -24,7 +24,6 @@
 #include "progmisc.hpp"
 #include "beeper.hpp"
 #include "i2c.hpp"
-#include "LTC2942.hpp"
 
 void configureDevice() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB //
@@ -59,6 +58,4 @@ void configureDevice() {
     volatile int i;
     for (i = 0; i < 100000; i++)
         ; // I2C initialization takes some time
-
-    //LTC2942_Configure();
 }

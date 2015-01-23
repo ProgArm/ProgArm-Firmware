@@ -21,7 +21,6 @@
 #include "actions.hpp"
 #include "connection.hpp"
 #include "vibration.hpp"
-#include "LTC2942.hpp"
 
 std::queue<u8> outputBuffer;
 std::queue<u8> inputBuffer;
@@ -137,13 +136,8 @@ extern "C" void USART1_IRQHandler(void) {
 }
 
 void sendBatteryData() {
-    int charge = LTC2942_GetBatteryCharge();
-    int voltage = LTC2942_GetBatteryVoltage();
-    volatile int i;
-    for (i = 0; i < 10000; i++)
-        ;
-    int temperature = LTC2942_GetBatteryTemperature();
-    print(7, 'B', charge >> 8, charge & 0xFF, voltage >> 8, voltage & 0xFF, temperature >> 8, temperature & 0xFF);
+    // TODO
+    //print(7, 'B', charge >> 8, charge & 0xFF, voltage >> 8, voltage & 0xFF, temperature >> 8, temperature & 0xFF);
 }
 
 void processIncomingData() { // TODO make it shorter
