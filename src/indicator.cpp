@@ -38,7 +38,7 @@ void configureLed() {
 
     setLedValues(0, 0, 0); // turn it off
 
-    idleLight = new Notification(0, 0, 1);
+    idleLight = new Notification(0, 1, 0);
     idleLight->turnOn();
     addNotification(idleLight);
 
