@@ -111,3 +111,22 @@ uint I2C_ReceiveMany(u8 address, u8 reg, int count) {
     ReadStop();
     return out;
 }
+
+u8 I2C_Get(u8 address, u8 reg, int msbIndex, int size) {
+    u8 kindaMask = (u8) (((uint) 1 << size) - 1);
+    u8 data = I2C_Receive(address, reg);
+    data >>= msbIndex - size + 1;
+    data &= kindaMask;
+    return data;
+}
+
+u8 I2C_GetAndSet(u8 address, u8 reg, int msbIndex, int size, u8 newData) {
+    int shift = msbIndex - size + 1;
+    u8 kindaMask = (u8) (((uint) 1 << size) - 1);
+    newData &= kindaMask; // protection // TODO assert?
+    u8 data = I2C_Receive(address, reg);
+    data &= ~(kindaMask << shift); // reset existing
+    data |= newData << shift;
+    I2C_Write(address, reg, data);
+    return newData;
+}
