@@ -12,25 +12,20 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+#pragma once
 
-#include "core/device.hpp"
-#include "core/notificationManager.hpp"
-#include "core/wakeup.hpp"
-#include "systems/ring.hpp"
+#include <stm32f10x.h>
+#include <stm32f10x_gpio.h>
+#include <cstdbool>
 
-int main(void) {
-    configureDevice();
-    int count = 0;
+#include "../core/progmisc.hpp"
 
-    while (1) {
-        count++;
-        resetButtons();
+static const int RING_BUTTON_COUNT = 2;
+extern int lastPress[];
 
-        updateNotification();
+static Pin PIN_RING_BUTTON_1(GPIOA, GPIO_Pin_0, GPIO_Speed_2MHz, GPIO_Mode_IN_FLOATING, true);
+static Pin PIN_RING_BUTTON_2(GPIOC, GPIO_Pin_1, GPIO_Speed_2MHz, GPIO_Mode_IPU, false);
 
-        setWakeTimer();
-        //__WFI(); // TODO LED PWM wakes us up? What the hell?
-        //PWR_EnterSTANDBYMode();
-        //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-    }
-}
+void configureRing();
+void resetButtons();
+//void buttonRelease();

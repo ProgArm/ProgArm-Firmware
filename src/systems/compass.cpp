@@ -13,24 +13,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-#include "core/device.hpp"
-#include "core/notificationManager.hpp"
-#include "core/wakeup.hpp"
-#include "systems/ring.hpp"
+#include "compass.hpp"
 
-int main(void) {
-    configureDevice();
-    int count = 0;
+#include <cstdbool>
 
-    while (1) {
-        count++;
-        resetButtons();
+#include "../core/device.hpp"
+#include "../core/progmisc.hpp"
 
-        updateNotification();
+bool compasOutput = false;
 
-        setWakeTimer();
-        //__WFI(); // TODO LED PWM wakes us up? What the hell?
-        //PWR_EnterSTANDBYMode();
-        //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-    }
+void configureCompass() {
+
+}
+
+void compassToggle() {
+    compasOutput = !compasOutput;
+    if (compasOutput)
+        PIN_POWER_PERIPHERAL.turnOn();
+    else
+        PIN_POWER_PERIPHERAL.turnOff(); // XXX
+}
+
+void updateCompass() {
+    /*char buffer[50];
+     if (compasOutput) {
+     int16_t compass[3];
+     //
+     sprintf(buffer, "Compass: %d\t%d\t%d\n", compass[0], compass[1], compass[2]);
+     printPlain(buffer);
+     }*/
 }

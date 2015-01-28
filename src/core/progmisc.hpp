@@ -13,24 +13,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-#include "core/device.hpp"
-#include "core/notificationManager.hpp"
-#include "core/wakeup.hpp"
-#include "systems/ring.hpp"
+#pragma once
 
-int main(void) {
-    configureDevice();
-    int count = 0;
+#include <stm32f10x.h>
+#include <stm32f10x_gpio.h>
+#include <cstdint>
 
-    while (1) {
-        count++;
-        resetButtons();
+class Pin {
+public:
+    GPIO_InitTypeDef pin;
+    GPIO_TypeDef* gpio;
+    bool activeHigh;
 
-        updateNotification();
-
-        setWakeTimer();
-        //__WFI(); // TODO LED PWM wakes us up? What the hell?
-        //PWR_EnterSTANDBYMode();
-        //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-    }
-}
+    Pin(GPIO_TypeDef* gpio, uint16_t GPIO_Pin, //
+            GPIOSpeed_TypeDef GPIO_Speed, GPIOMode_TypeDef GPIO_Mode, bool activeHigh);
+    //Pin(GPIO_TypeDef* gpio, GPIO_InitTypeDef pin);
+    void init();
+    void turnOn();
+    void turnOff();
+    int toggle();
+    u16 read();
+};

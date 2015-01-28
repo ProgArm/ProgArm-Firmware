@@ -13,24 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-#include "core/device.hpp"
-#include "core/notificationManager.hpp"
-#include "core/wakeup.hpp"
-#include "systems/ring.hpp"
+#pragma once
 
-int main(void) {
-    configureDevice();
-    int count = 0;
+#include <stdint.h>
 
-    while (1) {
-        count++;
-        resetButtons();
-
-        updateNotification();
-
-        setWakeTimer();
-        //__WFI(); // TODO LED PWM wakes us up? What the hell?
-        //PWR_EnterSTANDBYMode();
-        //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-    }
-}
+void configureVibration();
+void setVibration(uint16_t amount);

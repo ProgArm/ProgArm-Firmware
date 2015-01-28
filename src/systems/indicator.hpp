@@ -13,24 +13,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-#include "core/device.hpp"
-#include "core/notificationManager.hpp"
-#include "core/wakeup.hpp"
-#include "systems/ring.hpp"
+#pragma once
 
-int main(void) {
-    configureDevice();
-    int count = 0;
+#include <cstdint>
 
-    while (1) {
-        count++;
-        resetButtons();
+class Notification;
 
-        updateNotification();
+enum LED_COLOR {
+    LED_RED = 0, LED_GREEN = 1, LED_BLUE = 2
+};
 
-        setWakeTimer();
-        //__WFI(); // TODO LED PWM wakes us up? What the hell?
-        //PWR_EnterSTANDBYMode();
-        //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-    }
-}
+extern Notification* idleLight;
+extern Notification* flashlight;
+
+void configureLed();
+
+void presenceToggle();
+void flashlightToggle();
+void setLedValues(uint16_t r, uint16_t g, uint16_t b);
+

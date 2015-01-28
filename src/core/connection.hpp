@@ -13,24 +13,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-#include "core/device.hpp"
-#include "core/notificationManager.hpp"
-#include "core/wakeup.hpp"
-#include "systems/ring.hpp"
+#pragma once
 
-int main(void) {
-    configureDevice();
-    int count = 0;
+#include <stdint.h>
+#include <stm32f10x.h>
+#include <stm32f10x_gpio.h>
+#include <cstdbool>
 
-    while (1) {
-        count++;
-        resetButtons();
+#include "progmisc.hpp"
 
-        updateNotification();
+static const uint32_t BLUETOOTH_BAUD = 38400;
+static Pin PIN_BLUETOOTH_POWER(GPIOC, GPIO_Pin_6, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
+static Pin PIN_BLUETOOTH_KEY(GPIOA, GPIO_Pin_8, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, true);
 
-        setWakeTimer();
-        //__WFI(); // TODO LED PWM wakes us up? What the hell?
-        //PWR_EnterSTANDBYMode();
-        //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-    }
-}
+void configureConnection();
+
+void processIncomingData();
+
+void printAction(u8 action);
+void print(const char* str);
+void printPlain(const char* str);
+void clientPut(u8 ch);
