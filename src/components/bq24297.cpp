@@ -19,8 +19,6 @@
 
 #include "../core/i2c.hpp"
 
-// TODO complete it
-
 // REG00
 
 bool get_EN_HIZ() {
@@ -38,12 +36,53 @@ int get_VINDPM() {
 void set_VINDPM(int mVolts) { // mVolts should be in multiples of 80
     mVolts -= 3880; // offset
     mVolts /= 80;
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 3, 3, mVolts);
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 6, 4, mVolts);
 }
 
-//int get_IINLIM() {
-// TODO
-//}
+int get_IINLIM() {
+    u8 data = I2C_Get(BQ24297_ADDRESS, 0x00, 2, 3);
+    switch (data) {
+    case 0:
+        return 100; // in mA
+    case 1:
+        return 150;
+    case 2:
+        return 500;
+    case 3:
+        return 900;
+    case 4:
+        return 1000;
+    case 5:
+        return 1500;
+    case 6:
+        return 2000;
+    case 7:
+        return 3000;
+    default:
+        // should not happen
+        return 0;
+    }
+}
+
+void set_IINLIM(int mA) {
+    if (mA >= 3000)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 2, 3, 7);
+    else if (mA >= 2000)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 2, 3, 6);
+    else if (mA >= 1500)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 2, 3, 5);
+    else if (mA >= 1000)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 2, 3, 4);
+    else if (mA >= 900)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 2, 3, 3);
+    else if (mA >= 500)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 2, 3, 2);
+    else if (mA >= 150)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 2, 3, 1);
+    else
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 2, 3, 0);
+
+}
 
 // REG01
 
@@ -59,16 +98,16 @@ bool get_OTG_CONFIG() {
     return I2C_Get(BQ24297_ADDRESS, 0x01, 5, 1);
 }
 
-void set_OTG_CONFIG(bool set) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x01, 5, 1, set);
+void set_OTG_CONFIG(bool enabled) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x01, 5, 1, enabled);
 }
 
 bool get_CHG_CONFIG() {
     return I2C_Get(BQ24297_ADDRESS, 0x01, 4, 1);
 }
 
-void set_CHG_CONFIG(bool set) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x01, 4, 1, set);
+void set_CHG_CONFIG(bool enable) { // true if charge is enabled. OTG_CONFIG would override this
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x01, 4, 1, enable);
 }
 
 int get_SYS_MIN() {
@@ -118,7 +157,7 @@ void set_ICHG(int mA) { // in mA
     I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 7, 6, (mA - 512) / 64);
 }
 
-bool get_BCOLD() {
+bool get_BCOLD() { // TODO
     return I2C_Get(BQ24297_ADDRESS, 0x02, 1, 1);
 }
 
@@ -126,7 +165,7 @@ void set_BCOLD(bool set) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 1, 1, set);
 }
 
-bool get_FORCE_20PCT() {
+bool get_FORCE_20PCT() { // TODO
     return I2C_Get(BQ24297_ADDRESS, 0x02, 0, 1);
 }
 
@@ -154,60 +193,92 @@ void set_ITERM(int mA) { // in mA
 
 // REG04
 
-int get_VREG() { // in mV
-    return I2C_Get(BQ24297_ADDRESS, 0x03, 7, 4) * 16 + 3504;
+int get_VREG() { // Charge Voltage Limit (in mV)
+    return I2C_Get(BQ24297_ADDRESS, 0x04, 7, 4) * 16 + 3504;
 }
 
-void set_VREG(int mV) { // in mV
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x03, 7, 4, (mV - 3504) / 16);
+void set_VREG(int mV) { // Charge Voltage Limit (in mV)
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x04, 7, 4, (mV - 3504) / 16);
 }
 
-bool get_BATLOWV() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 1, 1);
+bool get_BATLOWV() { // false - 2.8 V, true - 3.0 V
+    return I2C_Get(BQ24297_ADDRESS, 0x04, 1, 1);
 }
 
-void set_BATLOWV(bool set) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 1, 1, set);
+void set_BATLOWV(bool set) { // false - 2.8 V, true - 3.0 V
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x04, 1, 1, set);
 }
 
-bool get_VRECHG() { // TODO not bool
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 1, 1);
+bool get_VRECHG() { // Battery Recharge Threshold (below battery regulation voltage). false - 100 mV, true - 300 mV
+    return I2C_Get(BQ24297_ADDRESS, 0x04, 1, 1);
 }
 
-void set_VRECHG(bool set) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 1, 1, set);
+void set_VRECHG(bool set) { // Battery Recharge Threshold (below battery regulation voltage). false - 100 mV, true - 300 mV
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x04, 1, 1, set);
 }
 
 // REG05
 
 bool get_EN_TERM() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 7, 1);
+    return I2C_Get(BQ24297_ADDRESS, 0x05, 7, 1);
 }
 
 void set_EN_TERM(bool set) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 7, 1, set);
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, set);
 }
 
-// TODO WATCHDOG
+int get_WATCHDOG() {
+    u8 data = I2C_Get(BQ24297_ADDRESS, 0x05, 5, 1);
+    switch (data) {
+    case 0:
+        return 0;
+    case 1:
+        return 40;
+    case 2:
+        return 80;
+    case 3:
+        return 160;
+    default:
+        // Should not happen
+        return 0;
+    }
+}
+
+void set_WATCHDOG(int seconds) {
+    if (seconds == 0)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 0);
+    else if (seconds <= 40)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 1);
+    else if (seconds <= 80)
+            I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 2);
+    else // if (seconds <= 160)
+            I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 3);
+}
 
 bool get_EN_TIMER() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 3, 1);
+    return I2C_Get(BQ24297_ADDRESS, 0x05, 3, 1);
 }
 
-void set_EN_TIMER(bool set) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 3, 1, set);
+void set_EN_TIMER(bool enable) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 3, 1, enable);
 }
 
-// TODO CHG_TIMER
+bool get_CHG_TIMER() {
+    return I2C_Get(BQ24297_ADDRESS, 0x05, 3, 1);
+}
+
+void set_CHG_TIMER(bool enable) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 3, 1, enable);
+}
 
 // REG06
 
 int get_BOOSTV() { // in mV
-    return I2C_Get(BQ24297_ADDRESS, 0x03, 7, 4) * 64 + 4550;
+    return I2C_Get(BQ24297_ADDRESS, 0x06, 7, 4) * 64 + 4550;
 }
 
 void set_BOOSTV(int mV) { // in mV
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x03, 7, 4, (mV - 4550) / 64);
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x06, 7, 4, (mV - 4550) / 64);
 }
 
 // TODO BHOT
@@ -217,27 +288,27 @@ void set_BOOSTV(int mV) { // in mV
 // REG07
 
 bool get_DPDM_EN() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 7, 1);
+    return I2C_Get(BQ24297_ADDRESS, 0x07, 7, 1);
 }
 
 void set_DPDM_EN(bool set) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 7, 1, set);
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x07, 7, 1, set);
 }
 
 bool TMR2X_EN() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 6, 1);
+    return I2C_Get(BQ24297_ADDRESS, 0x07, 6, 1);
 }
 
 void TMR2X_EN(bool set) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 6, 1, set);
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x07, 6, 1, set);
 }
 
 bool get_BATFET_Disable() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 5, 1);
+    return I2C_Get(BQ24297_ADDRESS, 0x07, 5, 1);
 }
 
 void set_BATFET_Disable(bool set) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 5, 1, set);
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x07, 5, 1, set);
 }
 
 // TODO INT_MASK
@@ -249,17 +320,17 @@ void set_BATFET_Disable(bool set) {
 // TODO CHRG_STAT
 
 bool get_DPM_STAT() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 3, 1);
+    return I2C_Get(BQ24297_ADDRESS, 0x08, 3, 1);
 }
 
 bool get_PG_STAT() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 2, 1);
+    return I2C_Get(BQ24297_ADDRESS, 0x08, 2, 1);
 }
 
 bool get_THERM_STAT() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 1, 1);
+    return I2C_Get(BQ24297_ADDRESS, 0x08, 1, 1);
 }
 
 bool get_VSYS_STAT() {
-    return I2C_Get(BQ24297_ADDRESS, 0x02, 0, 1);
+    return I2C_Get(BQ24297_ADDRESS, 0x08, 0, 1);
 }
