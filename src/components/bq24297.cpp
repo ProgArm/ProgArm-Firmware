@@ -281,9 +281,21 @@ void set_BOOSTV(int mV) { // in mV
     I2C_GetAndSet(BQ24297_ADDRESS, 0x06, 7, 4, (mV - 4550) / 64);
 }
 
-// TODO BHOT
+u8 get_BHOT() {
+    return I2C_Get(BQ24297_ADDRESS, 0x06, 3, 2);
+}
 
-// TODO TREG
+void set_BHOT(u8 value) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x06, 3, 2, value);
+}
+
+int get_TREG() {
+    return I2C_Get(BQ24297_ADDRESS, 0x06, 1, 2) * 20 + 60;
+}
+
+void set_TREG(int temp) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x06, 1, 2, (temp - 60) / 20);
+}
 
 // REG07
 
@@ -311,13 +323,41 @@ void set_BATFET_Disable(bool set) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x07, 5, 1, set);
 }
 
-// TODO INT_MASK
+bool get_INT_CHRG_FAULT() {
+    return I2C_Get(BQ24297_ADDRESS, 0x07, 1, 1);
+}
+
+void set_INT_CHRG_FAULT(bool intEnabled) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x07, 1, 1, intEnabled);
+}
+
+bool get_INT_BAT_FAULT() {
+    return I2C_Get(BQ24297_ADDRESS, 0x07, 0, 1);
+}
+
+void set_INT_BAT_FAULT(bool intEnabled) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x07, 0, 1, intEnabled);
+}
 
 // REG08
 
-// TODO VBUS_STAT
+// XXX 0 - Unknown (no input, or DPDM detection incomplete), 1 - USB host, 2 - Adapter port, 3 - OTG
+int get_VBUS_STAT() {
+    return I2C_Get(BQ24297_ADDRESS, 0x08, 7, 2);
+}
 
-// TODO CHRG_STAT
+void set_VBUS_STAT(int value) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x08, 7, 2, value);
+}
+
+// XXX 0 - Not Charging, 1 - Pre-charge (<V_BATLOWV),2 - Fast Charging, 3 - Charge Termination Done
+int get_CHRG_STAT() {
+    return I2C_Get(BQ24297_ADDRESS, 0x08, 5, 2);
+}
+
+void set_CHRG_STAT(int value) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x08, 5, 2, value);
+}
 
 bool get_DPM_STAT() {
     return I2C_Get(BQ24297_ADDRESS, 0x08, 3, 1);
