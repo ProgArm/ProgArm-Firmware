@@ -15,12 +15,11 @@
 
 #include "connection.hpp"
 
-#include <core_cmFunc.h>
 #include <misc.h>
 #include <stdarg.h>
-#include <stm32f10x.h>
 #include <stm32f10x_rcc.h>
 #include <stm32f10x_usart.h>
+#include <cstdio>
 #include <queue>
 
 #include "../systems/vibration.hpp"
