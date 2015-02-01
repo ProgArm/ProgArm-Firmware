@@ -39,11 +39,11 @@ void set_VINDPM(int mVolts) { // mVolts should be in multiples of 80
     I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 6, 4, mVolts);
 }
 
-int get_IINLIM() {
+int get_IINLIM() { // in mA
     u8 data = I2C_Get(BQ24297_ADDRESS, 0x00, 2, 3);
     switch (data) {
     case 0:
-        return 100; // in mA
+        return 100;
     case 1:
         return 150;
     case 2:
@@ -106,7 +106,8 @@ bool get_CHG_CONFIG() {
     return I2C_Get(BQ24297_ADDRESS, 0x01, 4, 1);
 }
 
-void set_CHG_CONFIG(bool enable) { // true if charge is enabled. OTG_CONFIG would override this
+// true if charge is enabled. OTG_CONFIG would override this
+void set_CHG_CONFIG(bool enable) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x01, 4, 1, enable);
 }
 
@@ -153,7 +154,7 @@ int get_ICHG() { // in mA
     return I2C_Get(BQ24297_ADDRESS, 0x02, 7, 6) * 64 + 512;
 }
 
-void set_ICHG(int mA) { // in mA
+void set_ICHG(int mA) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 7, 6, (mA - 512) / 64);
 }
 
@@ -179,7 +180,7 @@ int get_IPRECHG() { // in mA
     return I2C_Get(BQ24297_ADDRESS, 0x03, 7, 4) * 128 + 128;
 }
 
-void set_IPRECHG(int mA) { // in mA
+void set_IPRECHG(int mA) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x03, 7, 4, (mA - 128) / 128);
 }
 
@@ -187,33 +188,39 @@ int get_ITERM() { // in mA
     return I2C_Get(BQ24297_ADDRESS, 0x03, 3, 4) * 128 + 128;
 }
 
-void set_ITERM(int mA) { // in mA
+void set_ITERM(int mA) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x03, 3, 4, (mA - 128) / 128);
 }
 
 // REG04
 
-int get_VREG() { // Charge Voltage Limit (in mV)
+// Charge Voltage Limit (in mV)
+int get_VREG() {
     return I2C_Get(BQ24297_ADDRESS, 0x04, 7, 4) * 16 + 3504;
 }
 
-void set_VREG(int mV) { // Charge Voltage Limit (in mV)
+// Charge Voltage Limit (in mV)
+void set_VREG(int mV) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x04, 7, 4, (mV - 3504) / 16);
 }
 
-bool get_BATLOWV() { // false - 2.8 V, true - 3.0 V
+// false - 2.8 V, true - 3.0 V
+bool get_BATLOWV() {
     return I2C_Get(BQ24297_ADDRESS, 0x04, 1, 1);
 }
 
-void set_BATLOWV(bool set) { // false - 2.8 V, true - 3.0 V
+// false - 2.8 V, true - 3.0 V
+void set_BATLOWV(bool set) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x04, 1, 1, set);
 }
 
-bool get_VRECHG() { // Battery Recharge Threshold (below battery regulation voltage). false - 100 mV, true - 300 mV
+// Battery Recharge Threshold (below battery regulation voltage). false - 100 mV, true - 300 mV
+bool get_VRECHG() {
     return I2C_Get(BQ24297_ADDRESS, 0x04, 1, 1);
 }
 
-void set_VRECHG(bool set) { // Battery Recharge Threshold (below battery regulation voltage). false - 100 mV, true - 300 mV
+// Battery Recharge Threshold (below battery regulation voltage). false - 100 mV, true - 300 mV
+void set_VRECHG(bool set) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x04, 1, 1, set);
 }
 
@@ -250,9 +257,10 @@ void set_WATCHDOG(int seconds) {
     else if (seconds <= 40)
         I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 1);
     else if (seconds <= 80)
-            I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 2);
-    else // if (seconds <= 160)
-            I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 3);
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 2);
+    else
+        // if (seconds <= 160)
+        I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 3);
 }
 
 bool get_EN_TIMER() {
@@ -346,15 +354,17 @@ int get_VBUS_STAT() {
     return I2C_Get(BQ24297_ADDRESS, 0x08, 7, 2);
 }
 
+// XXX 0 - Unknown (no input, or DPDM detection incomplete), 1 - USB host, 2 - Adapter port, 3 - OTG
 void set_VBUS_STAT(int value) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x08, 7, 2, value);
 }
 
-// XXX 0 - Not Charging, 1 - Pre-charge (<V_BATLOWV),2 - Fast Charging, 3 - Charge Termination Done
+// XXX 0 - Not Charging, 1 - Pre-charge (<V_BATLOWV), 2 - Fast Charging, 3 - Charge Termination Done
 int get_CHRG_STAT() {
     return I2C_Get(BQ24297_ADDRESS, 0x08, 5, 2);
 }
 
+// XXX 0 - Not Charging, 1 - Pre-charge (<V_BATLOWV), 2 - Fast Charging, 3 - Charge Termination Done
 void set_CHRG_STAT(int value) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x08, 5, 2, value);
 }
