@@ -15,4 +15,23 @@
 
 #pragma once
 
-const int BQ27410_ADDRESS = 0x6B;
+#include <stm32f10x.h>
+
+const int BQ27410_ADDRESS = 0x55;
+
+int getControl();
+int getTemperature();
+int getVoltage();
+int getFlags();
+int getNominalAvailableCapacity();
+int getFullAvailableCapacity();
+int getRemainingCapacity();
+int getFullChargeCapacity();
+int getAverageCurrent();
+int getStandbyCurrent();
+int getMaxLoadCurrent();
+int getAvailableEnergy();
+int getAveragePower();
+int getStateOfCharge();
+int getIntTemperature();
+int getStateofHealth();
