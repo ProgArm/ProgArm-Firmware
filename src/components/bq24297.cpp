@@ -15,7 +15,7 @@
 
 #include "bq24297.hpp"
 
-#include <stm32f10x.h>
+#include <sys/types.h>
 
 #include "../core/i2c.hpp"
 
@@ -29,17 +29,17 @@ void set_EN_HIZ(bool set) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 7, 1, set);
 }
 
-int get_VINDPM() {
-    return 3880 + 80 * (int) I2C_Get(BQ24297_ADDRESS, 0x00, 6, 4); // in mV
+uint get_VINDPM() {
+    return 3880 + 80 * (uint) I2C_Get(BQ24297_ADDRESS, 0x00, 6, 4); // in mV
 }
 
-void set_VINDPM(int mVolts) { // mVolts should be in multiples of 80
+void set_VINDPM(uint mVolts) { // mVolts should be in multiples of 80
     mVolts -= 3880; // offset
     mVolts /= 80;
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 6, 4, mVolts);
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 6, 4, mVolts); // TODO add checks
 }
 
-int get_IINLIM() { // in mA
+uint get_IINLIM() { // in mA
     u8 data = I2C_Get(BQ24297_ADDRESS, 0x00, 2, 3);
     switch (data) {
     case 0:
@@ -64,7 +64,7 @@ int get_IINLIM() { // in mA
     }
 }
 
-void set_IINLIM(int mA) {
+void set_IINLIM(uint mA) {
     if (mA >= 3000)
         I2C_GetAndSet(BQ24297_ADDRESS, 0x00, 2, 3, 7);
     else if (mA >= 2000)
@@ -111,9 +111,9 @@ void set_CHG_CONFIG(bool enable) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x01, 4, 1, enable);
 }
 
-int get_SYS_MIN() {
+uint get_SYS_MIN() {
     u8 data = I2C_Get(BQ24297_ADDRESS, 0x01, 3, 3);
-    int mV = 3000;
+    uint mV = 3000;
     if ((data & 0b100) > 0)
         mV += 400;
     if ((data & 0b010) > 0)
@@ -123,7 +123,7 @@ int get_SYS_MIN() {
     return mV;
 }
 
-void set_SYS_MIN(int mVolts) {
+void set_SYS_MIN(uint mVolts) {
     mVolts -= 3000;
     u8 data = 0;
     if (mVolts > 400) {
@@ -150,12 +150,12 @@ void set_BOOST_LIM(bool set) {
 
 // REG02
 
-int get_ICHG() { // in mA
+uint get_ICHG() { // in mA
     return I2C_Get(BQ24297_ADDRESS, 0x02, 7, 6) * 64 + 512;
 }
 
-void set_ICHG(int mA) {
-    I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 7, 6, (mA - 512) / 64);
+void set_ICHG(uint mA) {
+    I2C_GetAndSet(BQ24297_ADDRESS, 0x02, 7, 6, (mA - 512) / 64); // TODO add checks
 }
 
 bool get_BCOLD() { // TODO
@@ -176,31 +176,31 @@ void set_FORCE_20PCT(bool set) {
 
 // REG03
 
-int get_IPRECHG() { // in mA
+uint get_IPRECHG() { // in mA
     return I2C_Get(BQ24297_ADDRESS, 0x03, 7, 4) * 128 + 128;
 }
 
-void set_IPRECHG(int mA) {
+void set_IPRECHG(uint mA) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x03, 7, 4, (mA - 128) / 128);
 }
 
-int get_ITERM() { // in mA
+uint get_ITERM() { // in mA
     return I2C_Get(BQ24297_ADDRESS, 0x03, 3, 4) * 128 + 128;
 }
 
-void set_ITERM(int mA) {
+void set_ITERM(uint mA) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x03, 3, 4, (mA - 128) / 128);
 }
 
 // REG04
 
 // Charge Voltage Limit (in mV)
-int get_VREG() {
+uint get_VREG() {
     return I2C_Get(BQ24297_ADDRESS, 0x04, 7, 4) * 16 + 3504;
 }
 
 // Charge Voltage Limit (in mV)
-void set_VREG(int mV) {
+void set_VREG(uint mV) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x04, 7, 4, (mV - 3504) / 16);
 }
 
@@ -234,7 +234,7 @@ void set_EN_TERM(bool set) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, set);
 }
 
-int get_WATCHDOG() {
+uint get_WATCHDOG() {
     u8 data = I2C_Get(BQ24297_ADDRESS, 0x05, 5, 1);
     switch (data) {
     case 0:
@@ -251,7 +251,7 @@ int get_WATCHDOG() {
     }
 }
 
-void set_WATCHDOG(int seconds) {
+void set_WATCHDOG(uint seconds) {
     if (seconds == 0)
         I2C_GetAndSet(BQ24297_ADDRESS, 0x05, 7, 1, 0);
     else if (seconds <= 40)
@@ -281,11 +281,11 @@ void set_CHG_TIMER(bool enable) {
 
 // REG06
 
-int get_BOOSTV() { // in mV
+uint get_BOOSTV() { // in mV
     return I2C_Get(BQ24297_ADDRESS, 0x06, 7, 4) * 64 + 4550;
 }
 
-void set_BOOSTV(int mV) { // in mV
+void set_BOOSTV(uint mV) { // in mV
     I2C_GetAndSet(BQ24297_ADDRESS, 0x06, 7, 4, (mV - 4550) / 64);
 }
 
@@ -297,11 +297,11 @@ void set_BHOT(u8 value) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x06, 3, 2, value);
 }
 
-int get_TREG() {
+uint get_TREG() {
     return I2C_Get(BQ24297_ADDRESS, 0x06, 1, 2) * 20 + 60;
 }
 
-void set_TREG(int temp) {
+void set_TREG(uint temp) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x06, 1, 2, (temp - 60) / 20);
 }
 
@@ -350,22 +350,22 @@ void set_INT_BAT_FAULT(bool intEnabled) {
 // REG08
 
 // XXX 0 - Unknown (no input, or DPDM detection incomplete), 1 - USB host, 2 - Adapter port, 3 - OTG
-int get_VBUS_STAT() {
+uint get_VBUS_STAT() {
     return I2C_Get(BQ24297_ADDRESS, 0x08, 7, 2);
 }
 
 // XXX 0 - Unknown (no input, or DPDM detection incomplete), 1 - USB host, 2 - Adapter port, 3 - OTG
-void set_VBUS_STAT(int value) {
+void set_VBUS_STAT(uint value) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x08, 7, 2, value);
 }
 
 // XXX 0 - Not Charging, 1 - Pre-charge (<V_BATLOWV), 2 - Fast Charging, 3 - Charge Termination Done
-int get_CHRG_STAT() {
+uint get_CHRG_STAT() {
     return I2C_Get(BQ24297_ADDRESS, 0x08, 5, 2);
 }
 
 // XXX 0 - Not Charging, 1 - Pre-charge (<V_BATLOWV), 2 - Fast Charging, 3 - Charge Termination Done
-void set_CHRG_STAT(int value) {
+void set_CHRG_STAT(uint value) {
     I2C_GetAndSet(BQ24297_ADDRESS, 0x08, 5, 2, value);
 }
 

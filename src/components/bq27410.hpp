@@ -15,23 +15,23 @@
 
 #pragma once
 
-#include <stm32f10x.h>
+#include <sys/types.h>
 
 const int BQ27410_ADDRESS = 0x55;
 
-int getControl();
-int getTemperature();
-int getVoltage();
-int getFlags();
-int getNominalAvailableCapacity();
-int getFullAvailableCapacity();
-int getRemainingCapacity();
-int getFullChargeCapacity();
+uint getControl();
+uint getTemperature();
+uint getVoltage();
+uint getFlags();
+uint getNominalAvailableCapacity();
+uint getFullAvailableCapacity();
+uint getRemainingCapacity();
+uint getFullChargeCapacity();
 int getAverageCurrent();
 int getStandbyCurrent();
 int getMaxLoadCurrent();
-int getAvailableEnergy();
+uint getAvailableEnergy();
 int getAveragePower();
-int getStateOfCharge();
-int getIntTemperature();
-int getStateofHealth();
+uint getStateOfCharge();
+uint getIntTemperature();
+uint getStateofHealth();

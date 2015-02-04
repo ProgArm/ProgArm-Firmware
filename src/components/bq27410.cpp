@@ -15,37 +15,39 @@
 
 #include "bq27410.hpp"
 
+#include <stm32f10x.h>
+
 #include "../core/i2c.hpp"
 
-int getControl() {
+uint getControl() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x01, 2);
 }
 
-int getTemperature() {
+uint getTemperature() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x03, 2);
 }
 
-int getVoltage() {
+uint getVoltage() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x05, 2);
 }
 
-int getFlags() {
+uint getFlags() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x07, 2);
 }
 
-int getNominalAvailableCapacity() {
+uint getNominalAvailableCapacity() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x09, 2);
 }
 
-int getFullAvailableCapacity() {
+uint getFullAvailableCapacity() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x0B, 2);
 }
 
-int getRemainingCapacity() {
+uint getRemainingCapacity() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x0D, 2);
 }
 
-int getFullChargeCapacity() {
+uint getFullChargeCapacity() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x0F, 2);
 }
 
@@ -61,7 +63,7 @@ int getMaxLoadCurrent() {
     return (s16) I2C_ReceiveMany(BQ27410_ADDRESS, 0x15, 2);
 }
 
-int getAvailableEnergy() {
+uint getAvailableEnergy() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x17, 2);
 }
 
@@ -69,14 +71,14 @@ int getAveragePower() {
     return (s16) I2C_ReceiveMany(BQ27410_ADDRESS, 0x19, 2);
 }
 
-int getStateOfCharge() {
+uint getStateOfCharge() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x1D, 2);
 }
 
-int getIntTemperature() {
+uint getIntTemperature() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x1F, 2);
 }
 
-int getStateofHealth() {
+uint getStateofHealth() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x21, 2);
 }

@@ -16,10 +16,11 @@
 #pragma once
 
 #include <stm32f10x.h>
+#include <sys/types.h>
 
 void I2C_Setup();
 void I2C_Write(u8 address, u8 reg, u8 value);
 u8 I2C_Receive(u8 Address, u8 Register);
-int I2C_ReceiveMany(u8 Address, u8 Register, int count);
+uint I2C_ReceiveMany(u8 Address, u8 Register, int count);
 u8 I2C_Get(u8 address, u8 reg, int msbIndex, int size);
 u8 I2C_GetAndSet(u8 address, u8 reg, int msbIndex, int size, u8 newData);
