@@ -15,14 +15,10 @@
 
 #include "actions.hpp"
 
-#include <cstdint>
+#include <cstdbool>
 
 #include "../input_codes.hpp"
-#include "../systems/accelgyro.hpp"
-#include "../systems/compass.hpp"
 #include "../systems/indicator.hpp"
-#include "connection.hpp"
-#include "progmisc.hpp"
 
 int currentAction = ACTION_NONE;
 bool deviceActionsEnabled = true;
@@ -66,18 +62,11 @@ void processAction(int action) {
         case INPUT_K:
             currentAction = ACTION_IGNORE;
             break;
-        case INPUT_J:
+        case INPUT_j:
             flashlightToggle();
             break;
-        case INPUT_I:
+        case INPUT_i:
             presenceToggle();
-            break;
-        case INPUT_O:
-            compassToggle();
-            accelgyroToggle();
-            break;
-        case INPUT_B:
-            PIN_BLUETOOTH_POWER.toggle();
             break;
         default:
             break;
