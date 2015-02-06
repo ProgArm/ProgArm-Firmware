@@ -20,6 +20,7 @@
 const int BQ27410_ADDRESS = 0x55;
 
 uint getControl();
+void setBattery(bool inserted);
 uint getTemperature();
 uint getVoltage();
 uint getFlags();
@@ -34,4 +35,4 @@ uint getAvailableEnergy();
 int getAveragePower();
 uint getStateOfCharge();
 uint getIntTemperature();
-uint getStateofHealth();
+uint getStateOfHealth();

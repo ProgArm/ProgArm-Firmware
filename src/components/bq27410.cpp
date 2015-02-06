@@ -19,8 +19,15 @@
 
 #include "../core/i2c.hpp"
 
+// TODO implement Control and Extended commands
+
 uint getControl() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x01, 2);
+}
+
+void setBattery(bool inserted) {
+    getControl();
+    I2C_Receive(BQ27410_ADDRESS, inserted ? 0x0c : 0x0d);
 }
 
 uint getTemperature() {
@@ -79,6 +86,6 @@ uint getIntTemperature() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x1F, 2);
 }
 
-uint getStateofHealth() {
+uint getStateOfHealth() {
     return I2C_ReceiveMany(BQ27410_ADDRESS, 0x21, 2);
 }
