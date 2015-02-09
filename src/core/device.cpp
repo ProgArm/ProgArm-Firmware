@@ -15,14 +15,15 @@
 
 #include "device.hpp"
 
-#include <stm32f10x.h>
 #include <stm32f10x_rcc.h>
 
 #include "../systems/indicator.hpp"
 #include "../systems/ring.hpp"
 #include "../systems/vibration.hpp"
+#include "bkp.hpp"
 #include "connection.hpp"
 #include "i2c.hpp"
+#include "rtc.hpp"
 #include "timing.hpp"
 #include "wakeup.hpp"
 
@@ -31,6 +32,10 @@ void configureDevice() {
             | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE); // We will need this for sure
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
     configureTime();
+    BKP_Setup(); // TODO rename these?
+    RTC_Setup();
+    I2C_Setup();
+    //SPI_Setup();
 
     //PIN_POWER_MODE.init();
     //PIN_POWER_MODE.turnOn(); // we expect high current when bluetooth is on
@@ -55,7 +60,6 @@ void configureDevice() {
      //configureCompass();
      //configureAccelgyro();
      */
-    I2C_Setup();
     volatile int i;
     for (i = 0; i < 100000; i++)
         ; // I2C initialization takes some time
