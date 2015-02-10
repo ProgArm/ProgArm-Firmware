@@ -20,12 +20,12 @@
 
 class Notification {
 public:
-    uint16_t color[3];
+    u16 color[3];
     int priority;
     int duration;
     int curDuration = 0;bool turnedOn = false;
 
-    Notification(uint16_t r, uint16_t g, uint16_t b, int priority = 0, int duration = -1); //
+    Notification(u16 r, u16 g, u16 b, int priority = 0, int duration = -1); //
     bool update();
     void turnOn();
     void turnOff();

@@ -30,5 +30,5 @@ void configureLed();
 
 void presenceToggle();
 void flashlightToggle();
-void setLedValues(uint16_t r, uint16_t g, uint16_t b);
+void setLedValues(u16 r, u16 g, u16 b);
 

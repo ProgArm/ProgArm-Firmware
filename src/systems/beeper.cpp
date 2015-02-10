@@ -37,7 +37,7 @@ void configureBeeper() {
     setBeeper(0);
 }
 
-void setBeeper(uint16_t amount) {
+void setBeeper(u16 amount) {
     if (amount != 0)
         TIM3->ARR = 8000000 / amount; // TODO get frequency from somewhere?
     TIM3->CCR4 = TIM3->ARR / 2; // 50% duty cycle

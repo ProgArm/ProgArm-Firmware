@@ -22,7 +22,7 @@
 
 #include "progmisc.hpp"
 
-static const uint32_t BLUETOOTH_BAUD = 38400;
+static const u32 BLUETOOTH_BAUD = 38400;
 static Pin PIN_BLUETOOTH_POWER(GPIOC, GPIO_Pin_6, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
 static Pin PIN_BLUETOOTH_KEY(GPIOA, GPIO_Pin_8, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, true);
 

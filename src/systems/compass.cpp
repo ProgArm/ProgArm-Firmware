@@ -37,7 +37,7 @@ void compassToggle() {
 void updateCompass() {
     /*char buffer[50];
      if (compasOutput) {
-     int16_t compass[3];
+     s16 compass[3];
      //
      sprintf(buffer, "Compass: %d\t%d\t%d\n", compass[0], compass[1], compass[2]);
      printPlain(buffer);

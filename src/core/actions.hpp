@@ -22,4 +22,4 @@ enum ACTION {
 };
 
 void processAction(int action);
-void changeState(uint8_t option);
+void changeState(u8 option);

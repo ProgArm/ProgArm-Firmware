@@ -25,7 +25,7 @@ public:
     GPIO_TypeDef* gpio;
     bool activeHigh;
 
-    Pin(GPIO_TypeDef* gpio, uint16_t GPIO_Pin, //
+    Pin(GPIO_TypeDef* gpio, u16 GPIO_Pin, //
             GPIOSpeed_TypeDef GPIO_Speed, GPIOMode_TypeDef GPIO_Mode, bool activeHigh);
     //Pin(GPIO_TypeDef* gpio, GPIO_InitTypeDef pin);
     void init();

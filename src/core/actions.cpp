@@ -24,7 +24,7 @@ int currentAction = ACTION_NONE;
 bool deviceActionsEnabled = true;
 bool ignoreTable[36] = { }; // XXX bools are stored inefficiently
 
-void changeState(uint8_t option) {
+void changeState(u8 option) {
     switch (option) {
     case 0:
     case '0':

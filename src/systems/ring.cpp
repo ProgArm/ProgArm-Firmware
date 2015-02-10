@@ -34,7 +34,7 @@ Notification* buttonsResetNotification;
 static const int DEBOUNCE_MILLISECONDS = 10;
 static const int CLICK_SHORT_MILLISECONDS = 50;
 static const int CLICK_LONG_MILLISECONDS = 280;
-volatile uint16_t action = 0;
+volatile u16 action = 0;
 volatile int clicks = 0;
 
 static const int CLICK_TIMEOUT_MILLISECONDS = 500;

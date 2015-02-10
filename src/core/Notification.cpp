@@ -19,7 +19,7 @@
 #include "notificationManager.hpp"
 #include "timing.hpp"
 
-Notification::Notification(uint16_t r, uint16_t g, uint16_t b, int priority, int duration) {
+Notification::Notification(u16 r, u16 g, u16 b, int priority, int duration) {
     this->color[0] = r;
     this->color[1] = g;
     this->color[2] = b;

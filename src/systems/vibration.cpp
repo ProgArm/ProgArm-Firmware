@@ -37,6 +37,6 @@ void configureVibration() {
     TIM4->CCR3 = 0; // turn it off
 }
 
-void setVibration(uint16_t amount) {
+void setVibration(u16 amount) {
     TIM4->CCR3 = amount;
 }
