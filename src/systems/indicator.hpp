@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include <stm32f10x.h>
 
 class Notification;
 

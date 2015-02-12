@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <stm32f10x.h>
 
 void configureVibration();
 void setVibration(u16 amount);

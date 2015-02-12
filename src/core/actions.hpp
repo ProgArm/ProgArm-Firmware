@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include <stm32f10x.h>
 
 enum ACTION {
     ACTION_NONE, ACTION_IGNORE
