@@ -15,6 +15,7 @@
 
 #include "actions.hpp"
 
+#include <stm32f10x_pwr.h>
 #include <cstdbool>
 
 #include "../input_codes.hpp"
@@ -67,6 +68,10 @@ void processAction(int action) {
             break;
         case INPUT_i:
             presenceToggle();
+            break;
+        case INPUT_u:
+            // TODO prepare for shutdown
+            PWR_EnterSTANDBYMode();
             break;
         default:
             break;
