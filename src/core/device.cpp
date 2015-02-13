@@ -15,6 +15,7 @@
 
 #include "device.hpp"
 
+#include <stm32f10x_pwr.h>
 #include <stm32f10x_rcc.h>
 
 #include "../systems/indicator.hpp"
@@ -34,6 +35,7 @@ void configureDevice() {
     configureTime();
     BKP_Setup(); // TODO rename these?
     RTC_Setup();
+    PWR_WakeUpPinCmd(ENABLE);
     I2C_Setup();
     //SPI_Setup();
 
