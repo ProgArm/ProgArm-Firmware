@@ -15,4 +15,12 @@
 
 #pragma once
 
+#include <stm32f10x.h>
+#include <stm32f10x_gpio.h>
+
+#include "progmisc.hpp"
+
+static Pin PIN_REQN(GPIOC, GPIO_Pin_6, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
+static Pin PIN_RDYN(GPIOC, GPIO_Pin_7, GPIO_Speed_2MHz, GPIO_Mode_IN_FLOATING, false);
+
 void SPI_Setup();

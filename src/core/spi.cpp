@@ -13,12 +13,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-#include <stm32f10x.h>
-#include <stm32f10x_gpio.h>
-#include <stm32f10x_spi.h>
+#include "spi.hpp"
 
+#include <misc.h>
+#include <stm32f10x.h>
+#include <stm32f10x_rcc.h>
+#include <stm32f10x_spi.h>
+#include <queue>
+
+#include "connection.hpp"
+
+std::queue<u8> outputBuffer;
+std::queue<u8> inputBuffer;
 
 void SPI_Setup() {
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+    // REQN and RDYN are specific to nRF8001
+    PIN_REQN.init();
+    PIN_RDYN.init();
+
+    NVIC_InitTypeDef NVIC_InitStructure;
+    NVIC_InitStructure.NVIC_IRQChannel = SPI1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; // TODO check priorities
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
+    NVIC_InitStructure.NVIC_IRQChannel = SPI1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    NVIC_Init(&NVIC_InitStructure);
+
     GPIO_InitTypeDef GPIO_InitStructure;
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7;
@@ -41,4 +66,24 @@ void SPI_Setup() {
     SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_LSB;
     SPI_InitStructure.SPI_CRCPolynomial = 7;
     SPI_Init(SPI1, &SPI_InitStructure);
+
+    SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE);
+    SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_RXNE, ENABLE);
+
+    SPI_Cmd(SPI1, ENABLE);
+}
+
+extern "C" void SPI1_IRQHandler(void) {
+    if (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) && !outputBuffer.empty()) {
+        SPI_I2S_SendData(SPI1, outputBuffer.front());
+        outputBuffer.pop();
+        if (outputBuffer.empty() && !PIN_RDYN.read()) { // nothing to output, nothing no receive
+            SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
+            PIN_REQN.turnOff();
+        }
+    }
+    if (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE)) {
+        inputBuffer.push(SPI_I2S_ReceiveData(SPI1));
+        processIncomingData();
+    }
 }
