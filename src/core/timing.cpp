@@ -15,7 +15,6 @@
 
 #include "timing.hpp"
 
-#include <core_cm3.h>
 #include <stm32f10x.h>
 #include <stm32f10x_flash.h>
 #include <stm32f10x_rcc.h>
