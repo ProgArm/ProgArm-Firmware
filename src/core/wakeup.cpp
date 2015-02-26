@@ -25,7 +25,9 @@
 
 #include "timing.hpp"
 
+namespace {
 std::priority_queue<int, std::vector<int>, std::greater<int> > wakeUpQueue;
+}
 
 void setWakeTimer() {
     while (wakeUpQueue.size() > 0 && wakeUpQueue.top() <= milliseconds)

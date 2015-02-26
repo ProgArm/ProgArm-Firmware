@@ -18,24 +18,27 @@
 #include <misc.h>
 #include <stm32f10x_exti.h>
 #include <algorithm>
-#include <cstdint>
 
 #include "../core/keys.hpp"
 #include "../core/notificationManager.hpp"
 #include "../core/Notification.hpp"
 #include "../core/timing.hpp"
 
+namespace {
 volatile bool pressed[RING_BUTTON_COUNT] = { };
 volatile bool wasPressed[RING_BUTTON_COUNT] = { };
-int lastPress[RING_BUTTON_COUNT] = { };
 Notification* pressNotifications[RING_BUTTON_COUNT] = { };
 Notification* buttonsResetNotification;
+
+volatile u16 action = 0;
+volatile int clicks = 0;
+}
+
+int lastPress[RING_BUTTON_COUNT] = { };
 
 static const int DEBOUNCE_MILLISECONDS = 10;
 static const int CLICK_SHORT_MILLISECONDS = 50;
 static const int CLICK_LONG_MILLISECONDS = 280;
-volatile u16 action = 0;
-volatile int clicks = 0;
 
 static const int CLICK_TIMEOUT_MILLISECONDS = 500;
 

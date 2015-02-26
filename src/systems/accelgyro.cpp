@@ -23,7 +23,9 @@
 #include "../core/progmisc.hpp"
 #include "indicator.hpp"
 
+namespace {
 bool accelgyroOutput = false;
+}
 
 void configureAccelgyro() {
     //MPU6050_I2C_Init();

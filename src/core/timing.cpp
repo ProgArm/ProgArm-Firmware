@@ -20,9 +20,6 @@
 #include <stm32f10x_rcc.h>
 #include <system_stm32f10x.h>
 
-RCC_ClocksTypeDef RCC_ClockFreq; // XXX why here?
-ErrorStatus HSEStartUpStatus; // XXX why here?
-
 volatile int milliseconds = 0;
 
 void setSysClockToHSE() { // TODO not really HSE yet
@@ -54,7 +51,7 @@ void setSysClockToPLL() {
     RCC_DeInit(); // RCC system reset(for debug purpose)
 
     RCC_HSEConfig(RCC_HSE_ON); // Enable HSE
-    HSEStartUpStatus = RCC_WaitForHSEStartUp(); // Wait till HSE is ready
+    ErrorStatus HSEStartUpStatus = RCC_WaitForHSEStartUp(); // Wait till HSE is ready
 
     if (HSEStartUpStatus == SUCCESS) {
         FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable); // Enable Prefetch Buffer

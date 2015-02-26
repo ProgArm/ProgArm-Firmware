@@ -23,8 +23,10 @@
 
 #include "connection.hpp"
 
+namespace {
 std::queue<u8> outputBuffer;
 std::queue<u8> inputBuffer;
+}
 
 void SPI_Setup() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);

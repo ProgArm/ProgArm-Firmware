@@ -25,6 +25,7 @@
 Notification* idleLight;
 Notification* flashlight;
 
+
 void configureLed() {
     GPIO_InitTypeDef gpio;
     gpio.GPIO_Speed = GPIO_Speed_2MHz;

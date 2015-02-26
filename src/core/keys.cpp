@@ -19,10 +19,12 @@
 #include "actions.hpp"
 #include "connection.hpp"
 
+namespace {
 bool shiftPressed = false;
 bool shiftHolded = false;
 bool fnPressed = false;
 bool fnHolded = false;
+}
 
 void processKey(u16 action) {
     if (action == INPUT_Shift) {

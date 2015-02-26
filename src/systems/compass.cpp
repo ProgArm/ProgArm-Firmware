@@ -20,7 +20,9 @@
 #include "../core/device.hpp"
 #include "../core/progmisc.hpp"
 
+namespace {
 bool compasOutput = false;
+}
 
 void configureCompass() {
 

@@ -25,8 +25,10 @@
 #include "../systems/vibration.hpp"
 #include "actions.hpp"
 
+namespace {
 std::queue<u8> outputBuffer;
 std::queue<u8> inputBuffer;
+}
 
 void NVIC_Configuration(void) {
     NVIC_InitTypeDef NVIC_InitStructure;
