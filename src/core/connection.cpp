@@ -134,7 +134,7 @@ extern "C" void USART1_IRQHandler(void) {
         if (outputBuffer.empty())
             USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
     }
-    if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == SET) {
+    if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE)) { // TODO clear flag?
         inputBuffer.push(USART_ReceiveData(USART1));
         processIncomingData();
     }
