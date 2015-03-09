@@ -25,6 +25,7 @@
 #include "connection.hpp"
 #include "i2c.hpp"
 #include "rtc.hpp"
+#include "spi.hpp"
 #include "timing.hpp"
 #include "wakeup.hpp"
 
@@ -37,7 +38,7 @@ void configureDevice() {
     RTC_Setup();
     PWR_WakeUpPinCmd(ENABLE);
     I2C_Setup();
-    //SPI_Setup();
+    SPI_Setup();
 
     //PIN_POWER_MODE.init();
     //PIN_POWER_MODE.turnOn(); // we expect high current when bluetooth is on
