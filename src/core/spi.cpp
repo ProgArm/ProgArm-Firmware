@@ -21,10 +21,14 @@
 #include <stm32f10x_spi.h>
 #include <sys/types.h>
 
-#include "../systems/indicator.hpp"
 
 //namespace {
-std::queue<u8> outputBufferSpi; // TODO make it volatile somehow
+
+uint packetInputBytesLeft = 0;
+uint packetOutputBytesLeft = 0;
+uint packetByteId = 0;
+
+std::queue<u8> outputBufferSpi;
 std::queue<u8> inputBufferSpi;
 //}
 
@@ -92,52 +96,64 @@ void SPI_Setup() {
     //SPI_SSOutputCmd(SPI1, ENABLE);
     SPI_Cmd(SPI1, ENABLE);
     //SPI_Cmd(SPI1, ENABLE);
-
-    //PIN_REQN.turnOn();
-    outputBufferSpi.push(2);
-    outputBufferSpi.push(1);
-    outputBufferSpi.push(2);
 }
 
+// Send one byte over SPI (or 0 if output buffer is empty)
+// This function should be called even if you want to READ a byte
+// because SPI is working in full duplex
 void spiPush() {
-    //PIN_REQN.turnOn();
-    if (outputBufferSpi.empty())
-        SPI_I2S_SendData(SPI1, 0); // we have to send something because we are in Full-Duplex
-    else {
-        SPI_I2S_SendData(SPI1, outputBufferSpi.front());
+    if (packetByteId == 0 && !outputBufferSpi.empty() && outputBufferSpi.front() < outputBufferSpi.size()) { // without +1 because <
+        packetOutputBytesLeft = outputBufferSpi.front();
+        SPI_I2S_SendData(SPI1, outputBufferSpi.front()); // packet length
         outputBufferSpi.pop();
+    } else if (packetOutputBytesLeft > 0) {
+        SPI_I2S_SendData(SPI1, outputBufferSpi.front()); // data
+        outputBufferSpi.pop();
+        packetOutputBytesLeft--;
+    } else // we have to send something because we are in Full-Duplex
+        SPI_I2S_SendData(SPI1, 0);
+}
+
+void spiPull() {
+    auto data = SPI_I2S_ReceiveData(SPI1);
+    if (packetByteId == 0) {
+        // byte 0 is a weird byte (according to datasheet it should be discarded)
+    } else {
+        if (packetByteId == 1) { // byte 1 is packet length
+            packetInputBytesLeft = data;
+            if (packetInputBytesLeft > 0) {
+                inputBufferSpi.push(data);
+            }
+        } else if (packetInputBytesLeft > 0) {
+            inputBufferSpi.push(data);
+            packetInputBytesLeft--;
+        }
     }
 }
 
 extern "C" void EXTI9_5_IRQHandler(void) {
     if (EXTI_GetITStatus(EXTI_Line7)) { // RDYN
-        //flashlightToggle();
         EXTI_ClearITPendingBit(EXTI_Line7);
-
-        PIN_REQN.turnOn(); // Let's ask for a byte!
+        // This interrupt means that nRF8001 wants to tell us something
+        // OR we want to tell something
+        PIN_REQN.turnOn(); // Let's ask it to start a packet transmission!
         spiPush();
         //SPI_Cmd(SPI1, ENABLE);
     }
 }
 
-uint current = 0;
-uint packetSize = 0;
-
 extern "C" void SPI1_IRQHandler(void) {
-    flashlightToggle();
     if (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE)) {
-        auto data = SPI_I2S_ReceiveData(SPI1);
-        inputBufferSpi.push(data);
-        if (current == 1)
-            packetSize = data;
-        if (current > 1 && --packetSize == 0) {
-            current = 0;
-            packetSize = 0;
-            PIN_REQN.turnOff();
-        } else {
-            spiPush();
-            current++;
+        spiPull();
+        if (packetInputBytesLeft > 0 || packetOutputBytesLeft > 0 || packetByteId == 0) {
+            packetByteId++;
+            spiPush(); // IRQHandler will be called again once the transmission is done
+        } else { // there are no more bytes to send or receive
+            packetByteId = 0;
+            packetInputBytesLeft = 0;
+            packetOutputBytesLeft = 0;
+            PIN_REQN.turnOff(); // we turn off REQN after every packet
         }
-        //SPI_Cmd(SPI1, DISABLE); // that's it, one byte at a time
+        //SPI_Cmd(SPI1, DISABLE); // that's it, one packet at a time
     }
 }

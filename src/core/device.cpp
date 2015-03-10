@@ -45,6 +45,7 @@ void configureDevice() {
     //PIN_POWER_PERIPHERAL.init();
     PIN_POWER_PORTS.init();
     PIN_POWER_PORTS.turnOn();
+    PIN_GPIOA_2.init();
     //PIN_CHARGE.init();
 
     configureWakeups();
