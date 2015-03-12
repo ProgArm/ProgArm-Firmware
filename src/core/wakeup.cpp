@@ -25,9 +25,8 @@
 
 #include "timing.hpp"
 
-namespace {
+namespace wakeup {
 std::priority_queue<int, std::vector<int>, std::greater<int> > wakeUpQueue;
-}
 
 void setWakeTimer() {
     while (wakeUpQueue.size() > 0 && wakeUpQueue.top() <= milliseconds)
@@ -41,11 +40,11 @@ void setWakeTimer() {
     TIM4->CR1 |= TIM_CR1_CEN;
 }
 
-void addWakeUp(int ms) {
+void add(int ms) {
     wakeUpQueue.push(milliseconds + ms);
 }
 
-void configureWakeups() {
+void configure() {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
     TIM_TimeBaseInitTypeDef timerInitStructure;
     timerInitStructure.TIM_Prescaler = 8000; // 8000 to tick every millisecond
@@ -67,6 +66,8 @@ void configureWakeups() {
     nvicStructure.NVIC_IRQChannelSubPriority = 1;
     nvicStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&nvicStructure);
+}
+
 }
 
 extern "C" void TIM4_IRQHandler() {

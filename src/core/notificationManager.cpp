@@ -15,40 +15,40 @@
 
 #include "notificationManager.hpp"
 
-#include <cstddef>
-#include <vector>
-
-#include "Notification.hpp"
 #include "wakeup.hpp"
+
+namespace notificationManager {
 
 Notification* activeNotification;
 std::vector<Notification*> notifications;
 
-void addNotification(Notification* newNotification) {
+void add(Notification* newNotification) {
     if (notifications.size() == 0) // put dummy notification so that we always have something to fall back to
         notifications.push_back(new Notification(0, 0, 0, -10000));
     notifications.push_back(newNotification);
-    chooseMostPrioritizedNotification();
+    chooseMostPrioritized();
 }
 
-void updateNotification() {
-    if (activeNotification != NULL)
+void update() {
+    if (activeNotification != nullptr)
         if (!activeNotification->turnedOn || activeNotification->update()) {
             activeNotification->turnOff();
-            chooseMostPrioritizedNotification();
+            chooseMostPrioritized();
         }
 }
 
-void chooseMostPrioritizedNotification() {
-    if (activeNotification != NULL && activeNotification->turnedOn)
+void chooseMostPrioritized() {
+    if (activeNotification != nullptr && activeNotification->turnedOn)
         activeNotification->pause();
-    activeNotification = NULL;
+    activeNotification = nullptr;
     for (auto &curNotification : notifications) // XXX not the most efficient way, but it is good enough for now
         if (curNotification->turnedOn)
-            if (activeNotification == NULL || activeNotification->priority <= curNotification->priority) {
+            if (activeNotification == nullptr || activeNotification->priority <= curNotification->priority) {
                 activeNotification = curNotification;
-                addWakeUp(activeNotification->curDuration);
+                wakeup::add(activeNotification->curDuration);
             }
-    if (activeNotification != NULL)
+    if (activeNotification != nullptr)
         activeNotification->play();
+}
+
 }

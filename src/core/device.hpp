@@ -15,7 +15,6 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <stm32f10x.h>
 #include <stm32f10x_gpio.h>
 #include <cstdbool>
@@ -31,4 +30,8 @@ static Pin PIN_POWER_PORTS(GPIOB, GPIO_Pin_1, GPIO_Speed_2MHz, GPIO_Mode_Out_OD,
 
 static Pin PIN_GPIOA_2(GPIOC, GPIO_Pin_2, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, true); // TODO delete me
 
-void configureDevice();
+namespace device {
+
+void configure();
+
+}

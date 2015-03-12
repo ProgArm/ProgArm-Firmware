@@ -15,40 +15,39 @@
 
 #include "accelgyro.hpp"
 
-#include <stdlib.h>
-#include <stm32f10x.h>
 #include <cstdbool>
 
-#include "../core/device.hpp"
-#include "../core/progmisc.hpp"
-#include "indicator.hpp"
 
-namespace {
+// TODO this file is currently obsolete
+
+namespace accelgyro {
+
 bool accelgyroOutput = false;
-}
 
-void configureAccelgyro() {
+void configure() {
     //MPU6050_I2C_Init();
     //MPU6050_Initialize();
 }
 
-void accelgyroToggle() {
+void toggle() {
     accelgyroOutput = !accelgyroOutput;
-    if (accelgyroOutput)
-        PIN_POWER_PERIPHERAL.turnOn();
-    else
-        PIN_POWER_PERIPHERAL.turnOff(); // XXX
+    /*if (accelgyroOutput)
+     PIN_POWER_PERIPHERAL.turnOn();
+     else
+     PIN_POWER_PERIPHERAL.turnOff(); // XXX*/
 }
 
-void updateAccelgyro() {
+void update() {
     //char buffer[50];
-    if (accelgyroOutput) {
-        s16 accelgyro[6];
-        //MPU6050_GetRawAccelGyro(accelgyro);
-        setLedValues(abs(accelgyro[0]) / 200, abs(accelgyro[1]) / 200, abs(accelgyro[2]) / 200);
-        //setLedValues(abs(accelgyro[3]) / 100, abs(accelgyro[4]) / 100, abs(accelgyro[5]) / 100);
-        /*sprintf(buffer, "AccelGyro: %d\t%d\t%d\t%d\t%d\t%d\n", accelgyro[0], accelgyro[1], accelgyro[2],
-         accelgyro[3], accelgyro[4], accelgyro[5]);
-         printPlain(buffer);*/
-    }
+    /*if (accelgyroOutput) {
+     s16 accelgyro[6];
+     //MPU6050_GetRawAccelGyro(accelgyro);
+     indicator::setLedValues(abs(accelgyro[0]) / 200, abs(accelgyro[1]) / 200, abs(accelgyro[2]) / 200);
+     //setLedValues(abs(accelgyro[3]) / 100, abs(accelgyro[4]) / 100, abs(accelgyro[5]) / 100);
+     sprintf(buffer, "AccelGyro: %d\t%d\t%d\t%d\t%d\t%d\n", accelgyro[0], accelgyro[1], accelgyro[2],
+     accelgyro[3], accelgyro[4], accelgyro[5]);
+     printPlain(buffer);
+     }*/
+}
+
 }

@@ -22,6 +22,8 @@
 
 volatile int milliseconds = 0;
 
+namespace timing {
+
 void setSysClockToHSE() { // TODO not really HSE yet
     SystemInit();
     //RCC_HSEConfig(RCC_HSE_ON); // Enable HSE
@@ -82,15 +84,13 @@ void setSysClockToPLL() {
     }
 }
 
-extern "C" void SysTick_Handler(void) {
-    milliseconds++;
-    //if (milliseconds % 1000 == 0) {
-    //LED_GPIO[LED_GREEN]->BRR = LED_PINS[LED_GREEN];
-    //LED_GPIO[LED_GREEN]->BSRR = LED_PINS[LED_GREEN];
-    //}
-}
-
-void configureTime() {
+void configure() {
     setSysClockToHSE();
     SysTick_Config(8000);
+}
+
+}
+
+extern "C" void SysTick_Handler(void) {
+    milliseconds++;
 }

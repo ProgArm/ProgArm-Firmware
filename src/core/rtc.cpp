@@ -21,8 +21,9 @@
 #include <stm32f10x_rtc.h>
 #include <tuple>
 
+namespace rtc {
 
-void RTC_Configuration(void) {
+void configuration(void) {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
     PWR_BackupAccessCmd(ENABLE); // Allow access to BKP Domain
     BKP_DeInit(); // Reset Backup Domain // TODO move to backup.cpp?
@@ -41,9 +42,9 @@ void RTC_Configuration(void) {
     RTC_WaitForLastTask();
 }
 
-void RTC_Setup() {
+void setup() {
     if (BKP_ReadBackupRegister(BKP_DR1) != 0xA5A5) { //RTC not configured yet
-        RTC_Configuration();
+        configuration();
         BKP_WriteBackupRegister(BKP_DR1, 0xA5A5);
     } else {
         if (RCC_GetFlagStatus(RCC_FLAG_PORRST) != RESET) {
@@ -70,6 +71,15 @@ void RTC_Setup() {
     RCC_ClearFlag();
 }
 
+std::tuple<int, int, int> getTime() {
+    int value = RTC_GetCounter();
+    int hours = value / 3600;
+    int minutes = (value % 3600) / 60;
+    int seconds = (value % 3600) % 60;
+    return std::make_tuple(hours, minutes, seconds);
+}
+
+}
 
 extern "C" void RTC_IRQHandler(void) {
     if (RTC_GetITStatus(RTC_IT_ALR) != RESET) {
@@ -79,12 +89,3 @@ extern "C" void RTC_IRQHandler(void) {
         // TODO
     }
 }
-
-std::tuple<int, int, int> getTime() {
-    int value = RTC_GetCounter();
-    int hours = value / 3600;
-    int minutes = (value % 3600) / 60;
-    int seconds = (value % 3600) % 60;
-    return std::make_tuple(hours, minutes, seconds);
-}
-

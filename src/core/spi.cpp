@@ -21,8 +21,7 @@
 #include <stm32f10x_spi.h>
 #include <sys/types.h>
 
-
-//namespace {
+namespace {
 
 uint packetInputBytesLeft = 0;
 uint packetOutputBytesLeft = 0;
@@ -30,9 +29,46 @@ uint packetByteId = 0;
 
 std::queue<u8> outputBufferSpi;
 std::queue<u8> inputBufferSpi;
-//}
 
-void SPI_Setup() {
+// Send one byte over SPI (or 0 if output buffer is empty)
+// This function should be called even if you want to READ a byte
+// because SPI is working in full duplex
+void spiPush() {
+    if (packetByteId == 0 && !outputBufferSpi.empty() && outputBufferSpi.front() < outputBufferSpi.size()) { // without +1 because <
+        packetOutputBytesLeft = outputBufferSpi.front();
+        SPI_I2S_SendData(SPI1, outputBufferSpi.front()); // packet length
+        outputBufferSpi.pop();
+    } else if (packetOutputBytesLeft > 0) {
+        SPI_I2S_SendData(SPI1, outputBufferSpi.front()); // data
+        outputBufferSpi.pop();
+        packetOutputBytesLeft--;
+    } else
+        // we have to send something because we are in Full-Duplex
+        SPI_I2S_SendData(SPI1, 0);
+}
+
+void spiPull() {
+    auto data = SPI_I2S_ReceiveData(SPI1);
+    if (packetByteId == 0) {
+        // byte 0 is a weird byte (according to datasheet it should be discarded)
+    } else {
+        if (packetByteId == 1) { // byte 1 is packet length
+            packetInputBytesLeft = data;
+            if (packetInputBytesLeft > 0) {
+                inputBufferSpi.push(data);
+            }
+        } else if (packetInputBytesLeft > 0) {
+            inputBufferSpi.push(data);
+            packetInputBytesLeft--;
+        }
+    }
+}
+
+}
+
+namespace spi {
+
+void setup() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
     // REQN and RDYN are specific to nRF8001
     PIN_REQN.init();
@@ -98,37 +134,6 @@ void SPI_Setup() {
     //SPI_Cmd(SPI1, ENABLE);
 }
 
-// Send one byte over SPI (or 0 if output buffer is empty)
-// This function should be called even if you want to READ a byte
-// because SPI is working in full duplex
-void spiPush() {
-    if (packetByteId == 0 && !outputBufferSpi.empty() && outputBufferSpi.front() < outputBufferSpi.size()) { // without +1 because <
-        packetOutputBytesLeft = outputBufferSpi.front();
-        SPI_I2S_SendData(SPI1, outputBufferSpi.front()); // packet length
-        outputBufferSpi.pop();
-    } else if (packetOutputBytesLeft > 0) {
-        SPI_I2S_SendData(SPI1, outputBufferSpi.front()); // data
-        outputBufferSpi.pop();
-        packetOutputBytesLeft--;
-    } else // we have to send something because we are in Full-Duplex
-        SPI_I2S_SendData(SPI1, 0);
-}
-
-void spiPull() {
-    auto data = SPI_I2S_ReceiveData(SPI1);
-    if (packetByteId == 0) {
-        // byte 0 is a weird byte (according to datasheet it should be discarded)
-    } else {
-        if (packetByteId == 1) { // byte 1 is packet length
-            packetInputBytesLeft = data;
-            if (packetInputBytesLeft > 0) {
-                inputBufferSpi.push(data);
-            }
-        } else if (packetInputBytesLeft > 0) {
-            inputBufferSpi.push(data);
-            packetInputBytesLeft--;
-        }
-    }
 }
 
 extern "C" void EXTI9_5_IRQHandler(void) {

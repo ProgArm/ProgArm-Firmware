@@ -21,11 +21,15 @@
 #include "../core/progmisc.hpp"
 
 static const int RING_BUTTON_COUNT = 2;
-extern int lastPress[];
-
 static Pin PIN_RING_BUTTON_1(GPIOA, GPIO_Pin_0, GPIO_Speed_2MHz, GPIO_Mode_IN_FLOATING, true);
 static Pin PIN_RING_BUTTON_2(GPIOC, GPIO_Pin_1, GPIO_Speed_2MHz, GPIO_Mode_IPU, false);
 
-void configureRing();
+namespace ring {
+
+extern int lastPress[];
+
+void configure();
 void resetButtons();
 //void buttonRelease();
+
+}

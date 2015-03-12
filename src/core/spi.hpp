@@ -21,11 +21,15 @@
 
 #include "progmisc.hpp"
 
-extern std::queue<u8> outputBufferSpi;
-extern std::queue<u8> inputBufferSpi;
-
+// XXX should pin declarations be here?
 static Pin PIN_REQN(GPIOC, GPIO_Pin_6, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
 static Pin PIN_RDYN(GPIOC, GPIO_Pin_7, GPIO_Speed_2MHz, GPIO_Mode_IN_FLOATING, false);
 
-void spiPush();
-void SPI_Setup();
+namespace spi {
+
+extern std::queue<u8> outputBufferSpi;
+extern std::queue<u8> inputBufferSpi;
+
+void setup();
+
+}

@@ -17,4 +17,8 @@
 
 extern volatile int milliseconds;
 
-void configureTime();
+namespace timing {
+
+void configure();
+
+}

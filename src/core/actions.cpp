@@ -16,13 +16,14 @@
 #include "actions.hpp"
 
 #include <stm32f10x_pwr.h>
+#include <sys/types.h>
 #include <cstdbool>
 
 #include "../input_codes.hpp"
 #include "../systems/indicator.hpp"
 
 namespace {
-int currentAction = ACTION_NONE;
+uint currentAction = ACTION_NONE;
 bool deviceActionsEnabled = true;
 bool ignoreTable[36] = { }; // XXX bools are stored inefficiently
 }
@@ -66,10 +67,10 @@ void processAction(int action) {
             currentAction = ACTION_IGNORE;
             break;
         case INPUT_j:
-            flashlightToggle();
+            indicator::flashlightToggle();
             break;
         case INPUT_i:
-            presenceToggle();
+            indicator::presenceToggle();
             break;
         case INPUT_u:
             // TODO prepare for shutdown

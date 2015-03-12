@@ -15,7 +15,6 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <stm32f10x.h>
 #include <stm32f10x_gpio.h>
 #include <cstdbool>
@@ -26,7 +25,9 @@ static const u32 BLUETOOTH_BAUD = 38400;
 static Pin PIN_BLUETOOTH_POWER(GPIOC, GPIO_Pin_6, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, false);
 static Pin PIN_BLUETOOTH_KEY(GPIOA, GPIO_Pin_8, GPIO_Speed_2MHz, GPIO_Mode_Out_OD, true);
 
-void configureConnection();
+namespace connection {
+
+void configure();
 
 void processIncomingData();
 
@@ -34,3 +35,5 @@ void printAction(u8 action);
 void print(const char* str);
 void printPlain(const char* str);
 void clientPut(u8 ch);
+
+}

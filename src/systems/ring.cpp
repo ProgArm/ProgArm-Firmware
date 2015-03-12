@@ -24,7 +24,7 @@
 #include "../core/Notification.hpp"
 #include "../core/timing.hpp"
 
-namespace {
+namespace ring {
 volatile bool pressed[RING_BUTTON_COUNT] = { };
 volatile bool wasPressed[RING_BUTTON_COUNT] = { };
 Notification* pressNotifications[RING_BUTTON_COUNT] = { };
@@ -32,7 +32,6 @@ Notification* buttonsResetNotification;
 
 volatile u16 action = 0;
 volatile int clicks = 0;
-}
 
 int lastPress[RING_BUTTON_COUNT] = { };
 
@@ -42,7 +41,7 @@ static const int CLICK_LONG_MILLISECONDS = 280;
 
 static const int CLICK_TIMEOUT_MILLISECONDS = 500;
 
-void configureRing() {
+void configure() {
     PIN_RING_BUTTON_1.init();
     PIN_RING_BUTTON_2.init();
 
@@ -75,9 +74,9 @@ void configureRing() {
     pressNotifications[0] = new Notification(0, 0, 0x00FF, 1000, 2);
     pressNotifications[1] = new Notification(0, 0x00FF, 0, 1000, 2);
     for (auto &curNotification : pressNotifications)
-        addNotification(curNotification);
+        notificationManager::add(curNotification);
     buttonsResetNotification = new Notification(0x00FF, 0, 0, 1000, 3);
-    addNotification(buttonsResetNotification);
+    notificationManager::add(buttonsResetNotification);
 }
 
 void resetButtons() {
@@ -128,7 +127,7 @@ void buttonRelease() { // XXX it is meant to work with two buttons only, add sup
     wasPressed[1] = false;
 
     if (clicks == 2) {
-        processKey(action);
+        keys::processKey(action);
         action = 0;
         clicks = 0;
     } else
@@ -149,14 +148,16 @@ void processInterrupt(int buttonId) {
     }
 }
 
+}
+
 extern "C" void EXTI0_IRQHandler(void) {
     if (EXTI_GetITStatus(EXTI_Line0) != RESET)
-        processInterrupt(0);
+        ring::processInterrupt(0);
     EXTI_ClearITPendingBit(EXTI_Line0);
 }
 
 extern "C" void EXTI1_IRQHandler(void) {
     if (EXTI_GetITStatus(EXTI_Line1) != RESET)
-        processInterrupt(1);
+        ring::processInterrupt(1);
     EXTI_ClearITPendingBit(EXTI_Line1);
 }

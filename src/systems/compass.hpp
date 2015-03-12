@@ -15,6 +15,10 @@
 
 #pragma once
 
+namespace compass {
+
 void configureCompass();
 void compassToggle();
 void updateCompass();
+
+}

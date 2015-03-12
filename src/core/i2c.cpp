@@ -19,9 +19,13 @@
 #include <stm32f10x_rcc.h>
 #include <sys/types.h>
 
-#define I2C_SPEED 10000
+// TODO use interrupts to process I2C
 
-void I2C_Setup() {
+#define I2C_SPEED 10000 // XXX
+
+namespace i2c {
+
+void setup() {
     GPIO_InitTypeDef GPIO_InitStructure;
     I2C_InitTypeDef I2C_InitStructure;
 
@@ -42,7 +46,7 @@ void I2C_Setup() {
     I2C_Init(I2C1, &I2C_InitStructure);
 }
 
-void I2C_Write(u8 address, u8 reg, u8 value) {
+void write(u8 address, u8 reg, u8 value) {
     I2C_GenerateSTART(I2C1, ENABLE);
     while (!I2C_GetFlagStatus(I2C1, I2C_FLAG_SB))
         ;
@@ -60,7 +64,7 @@ void I2C_Write(u8 address, u8 reg, u8 value) {
         ;
 }
 
-void ReadStart(u8 address, u8 reg) {
+void readStart(u8 address, u8 reg) {
     I2C_AcknowledgeConfig(I2C1, ENABLE); // re-enable ACK bit in case it was disabled last call
     while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY))
         ;
@@ -81,7 +85,7 @@ void ReadStart(u8 address, u8 reg) {
         ;
 }
 
-void ReadStop() {
+void readStop() {
     // enable NACK bit
     I2C_NACKPositionConfig(I2C1, I2C_NACKPosition_Current);
     I2C_AcknowledgeConfig(I2C1, DISABLE);
@@ -91,20 +95,20 @@ void ReadStop() {
         ;
 }
 
-u8 I2C_Receive(u8 address, u8 reg) {
+u8 receive(u8 address, u8 reg) {
     u8 out;
-    ReadStart(address, reg);
+    readStart(address, reg);
     while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
         ;
     out = I2C_ReceiveData(I2C1);
-    ReadStop();
+    readStop();
     return out;
 }
 
 // reg should point to the first byte (usually MSB)
-uint I2C_ReceiveMany(u8 address, u8 reg, int count) {
+uint receiveMany(u8 address, u8 reg, int count) {
     uint out = 0;
-    ReadStart(address, reg);
+    readStart(address, reg);
     for (int i = 0; i < count; i++) {
         while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
             ;
@@ -112,25 +116,27 @@ uint I2C_ReceiveMany(u8 address, u8 reg, int count) {
             out <<= 8;
         out += I2C_ReceiveData(I2C1);
     }
-    ReadStop();
+    readStop();
     return out;
 }
 
-u8 I2C_Get(u8 address, u8 reg, int msbIndex, int size) {
+u8 get(u8 address, u8 reg, int msbIndex, int size) {
     u8 kindaMask = (u8) (((uint) 1 << size) - 1);
-    u8 data = I2C_Receive(address, reg);
+    u8 data = receive(address, reg);
     data >>= msbIndex - size + 1;
     data &= kindaMask;
     return data;
 }
 
-u8 I2C_GetAndSet(u8 address, u8 reg, int msbIndex, int size, u8 newData) {
+u8 getAndSet(u8 address, u8 reg, int msbIndex, int size, u8 newData) {
     int shift = msbIndex - size + 1;
     u8 kindaMask = (u8) (((uint) 1 << size) - 1);
     newData &= kindaMask; // protection // TODO assert?
-    u8 data = I2C_Receive(address, reg);
+    u8 data = receive(address, reg);
     data &= ~(kindaMask << shift); // reset existing
     data |= newData << shift;
-    I2C_Write(address, reg, data);
+    write(address, reg, data);
     return newData;
+}
+
 }

@@ -23,6 +23,8 @@ enum LED_COLOR {
     LED_RED = 0, LED_GREEN = 1, LED_BLUE = 2
 };
 
+namespace indicator {
+
 extern Notification* idleLight;
 extern Notification* flashlight;
 
@@ -32,3 +34,4 @@ void presenceToggle();
 void flashlightToggle();
 void setLedValues(u16 r, u16 g, u16 b);
 
+}

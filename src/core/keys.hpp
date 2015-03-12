@@ -17,5 +17,8 @@
 
 #include <stm32f10x.h>
 
+namespace keys {
+
 void processKey(u16 action);
 
+}

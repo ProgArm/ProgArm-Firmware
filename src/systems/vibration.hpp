@@ -17,5 +17,9 @@
 
 #include <stm32f10x.h>
 
-void configureVibration();
-void setVibration(u16 amount);
+namespace vibration {
+
+void configure();
+void set(u16 amount);
+
+}

@@ -17,26 +17,23 @@
 
 #include <cstdbool>
 
-#include "../core/device.hpp"
-#include "../core/progmisc.hpp"
+namespace compass {
 
-namespace {
 bool compasOutput = false;
+
+void configure() {
+
 }
 
-void configureCompass() {
-
-}
-
-void compassToggle() {
+void toggle() {
     compasOutput = !compasOutput;
-    if (compasOutput)
-        PIN_POWER_PERIPHERAL.turnOn();
-    else
-        PIN_POWER_PERIPHERAL.turnOff(); // XXX
+    /*if (compasOutput)
+     PIN_POWER_PERIPHERAL.turnOn();
+     else
+     PIN_POWER_PERIPHERAL.turnOff(); // XXX*/
 }
 
-void updateCompass() {
+void update() {
     /*char buffer[50];
      if (compasOutput) {
      s16 compass[3];
@@ -44,4 +41,6 @@ void updateCompass() {
      sprintf(buffer, "Compass: %d\t%d\t%d\n", compass[0], compass[1], compass[2]);
      printPlain(buffer);
      }*/
+}
+
 }

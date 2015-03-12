@@ -17,5 +17,9 @@
 
 #include <tuple>
 
-void RTC_Setup();
+namespace rtc {
+
+void setup();
 std::tuple<int, int, int> getTime();
+
+}

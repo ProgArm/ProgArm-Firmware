@@ -18,9 +18,12 @@
 #include <stm32f10x.h>
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_rcc.h>
-#include <cstdint>
 
-void configureBeeper() {
+// XXX it seems like this code is obsolete
+
+namespace beeper {
+
+void configure() {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
@@ -34,11 +37,13 @@ void configureBeeper() {
     TIM3->CCMR2 |= (TIM_CCMR2_OC4M_0 | TIM_CCMR2_OC4M_1 | TIM_CCMR2_OC4M_2); // inverse PWM
     TIM3->CR1 |= TIM_CR1_CEN; // enable counter
 
-    setBeeper(0);
+    set(0);
 }
 
-void setBeeper(u16 amount) {
+void set(u16 amount) {
     if (amount != 0)
         TIM3->ARR = 8000000 / amount; // TODO get frequency from somewhere?
     TIM3->CCR4 = TIM3->ARR / 2; // 50% duty cycle
+}
+
 }

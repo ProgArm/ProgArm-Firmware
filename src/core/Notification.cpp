@@ -38,7 +38,7 @@ bool Notification::update() {
 void Notification::turnOn() {
     turnedOn = true;
     curDuration = duration;
-    chooseMostPrioritizedNotification();
+    notificationManager::chooseMostPrioritized();
 }
 
 void Notification::turnOff() {
@@ -54,10 +54,10 @@ void Notification::toggle() {
 }
 
 void Notification::play() {
-    setLedValues(color[0], color[1], color[2]);
+    indicator::setLedValues(color[0], color[1], color[2]);
     lastUpdate = milliseconds;
 }
 
 void Notification::pause() {
-    setLedValues(0, 0, 0); // XXX should we do that?
+    indicator::setLedValues(0, 0, 0); // XXX should we do that?
 }

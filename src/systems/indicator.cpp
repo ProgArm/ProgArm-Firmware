@@ -22,9 +22,10 @@
 #include "../core/notificationManager.hpp"
 #include "../core/Notification.hpp"
 
+namespace indicator {
+
 Notification* idleLight;
 Notification* flashlight;
-
 
 void configureLed() {
     GPIO_InitTypeDef gpio;
@@ -46,10 +47,10 @@ void configureLed() {
 
     idleLight = new Notification(0, 1, 0);
     idleLight->turnOn();
-    addNotification(idleLight);
+    notificationManager::add(idleLight);
 
     flashlight = new Notification(0xFFFF, 0xFFFF, 0xFFFF, 10000);
-    addNotification(flashlight);
+    notificationManager::add(flashlight);
 }
 
 void setLedValues(u16 r, u16 g, u16 b) {
@@ -66,3 +67,4 @@ void flashlightToggle() {
     flashlight->toggle();
 }
 
+}

@@ -15,4 +15,8 @@
 
 #pragma once
 
-void BKP_Setup();
+namespace bkp {
+
+void setup();
+
+}

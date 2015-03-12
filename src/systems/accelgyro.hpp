@@ -15,6 +15,10 @@
 
 #pragma once
 
-void configureAccelgyro();
-void accelgyroToggle();
-void updateAccelgyro();
+namespace accelgyro {
+
+void configure();
+void toggle();
+void update();
+
+}

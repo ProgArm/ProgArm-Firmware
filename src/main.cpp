@@ -19,16 +19,18 @@
 #include "systems/ring.hpp"
 
 int main(void) {
-    configureDevice();
+    device::configure();
     int count = 0;
 
+    int lastupdate = 0;
     while (1) {
         count++;
-        resetButtons();
+        ring::resetButtons();
 
-        updateNotification();
+        notificationManager::update();
 
-        setWakeTimer();
+        wakeup::setWakeTimer();
+
         //__WFI(); // TODO LED PWM wakes us up? What the hell?
         //PWR_EnterSTANDBYMode();
         //PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);

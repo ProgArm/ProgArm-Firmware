@@ -22,70 +22,70 @@
 // TODO implement Control and Extended commands
 
 uint getControl() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x01, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x01, 2);
 }
 
 void setBattery(bool inserted) {
     getControl();
-    I2C_Receive(BQ27410_ADDRESS, inserted ? 0x0c : 0x0d);
+    i2c::receive(BQ27410_ADDRESS, inserted ? 0x0c : 0x0d);
 }
 
 uint getTemperature() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x03, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x03, 2);
 }
 
 uint getVoltage() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x05, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x05, 2);
 }
 
 uint getFlags() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x07, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x07, 2);
 }
 
 uint getNominalAvailableCapacity() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x09, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x09, 2);
 }
 
 uint getFullAvailableCapacity() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x0B, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x0B, 2);
 }
 
 uint getRemainingCapacity() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x0D, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x0D, 2);
 }
 
 uint getFullChargeCapacity() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x0F, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x0F, 2);
 }
 
 int getAverageCurrent() {
-    return (s16) I2C_ReceiveMany(BQ27410_ADDRESS, 0x11, 2);
+    return (s16) i2c::receiveMany(BQ27410_ADDRESS, 0x11, 2);
 }
 
 int getStandbyCurrent() {
-    return (s16) I2C_ReceiveMany(BQ27410_ADDRESS, 0x13, 2);
+    return (s16) i2c::receiveMany(BQ27410_ADDRESS, 0x13, 2);
 }
 
 int getMaxLoadCurrent() {
-    return (s16) I2C_ReceiveMany(BQ27410_ADDRESS, 0x15, 2);
+    return (s16) i2c::receiveMany(BQ27410_ADDRESS, 0x15, 2);
 }
 
 uint getAvailableEnergy() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x17, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x17, 2);
 }
 
 int getAveragePower() {
-    return (s16) I2C_ReceiveMany(BQ27410_ADDRESS, 0x19, 2);
+    return (s16) i2c::receiveMany(BQ27410_ADDRESS, 0x19, 2);
 }
 
 uint getStateOfCharge() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x1D, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x1D, 2);
 }
 
 uint getIntTemperature() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x1F, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x1F, 2);
 }
 
 uint getStateOfHealth() {
-    return I2C_ReceiveMany(BQ27410_ADDRESS, 0x21, 2);
+    return i2c::receiveMany(BQ27410_ADDRESS, 0x21, 2);
 }

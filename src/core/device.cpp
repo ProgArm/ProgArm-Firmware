@@ -29,16 +29,18 @@
 #include "timing.hpp"
 #include "wakeup.hpp"
 
-void configureDevice() {
+namespace device {
+
+void configure() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB //
             | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE); // We will need this for sure
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-    configureTime();
-    BKP_Setup(); // TODO rename these?
-    RTC_Setup();
+    timing::configure();
+    bkp::setup(); // TODO rename these?
+    rtc::setup();
     PWR_WakeUpPinCmd(ENABLE);
-    I2C_Setup();
-    SPI_Setup();
+    i2c::setup();
+    spi::setup();
 
     //PIN_POWER_MODE.init();
     //PIN_POWER_MODE.turnOn(); // we expect high current when bluetooth is on
@@ -48,11 +50,11 @@ void configureDevice() {
     PIN_GPIOA_2.init();
     //PIN_CHARGE.init();
 
-    configureWakeups();
-    configureLed();
-    configureConnection();
-    configureRing();
-    configureVibration();
+    wakeup::configure();
+    indicator::configureLed();
+    connection::configure();
+    ring::configure();
+    vibration::configure();
     //configureBeeper();
 
     //PIN_POWER_PERIPHERAL.turnOn();
@@ -67,4 +69,6 @@ void configureDevice() {
     volatile int i;
     for (i = 0; i < 100000; i++)
         ; // I2C initialization takes some time
+}
+
 }

@@ -15,6 +15,7 @@
 
 #include "connection.hpp"
 
+#include <core_cmFunc.h>
 #include <misc.h>
 #include <stdarg.h>
 #include <stm32f10x_rcc.h>
@@ -25,10 +26,10 @@
 #include "../systems/vibration.hpp"
 #include "actions.hpp"
 
-namespace {
+namespace connection {
+
 std::queue<u8> outputBuffer;
 std::queue<u8> inputBuffer;
-}
 
 void NVIC_Configuration(void) {
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -42,7 +43,7 @@ void NVIC_Configuration(void) {
     NVIC_Init(&NVIC_InitStructure);
 }
 
-void configureConnection() {
+void configure() {
     //PIN_BLUETOOTH_KEY.init();
     //PIN_BLUETOOTH_POWER.init();
     //PIN_BLUETOOTH_POWER.turnOn();
@@ -127,19 +128,6 @@ void printAction(u8 action) {
     processOutgoingData();
 }
 
-extern "C" void USART1_IRQHandler(void) {
-    if (USART_GetFlagStatus(USART1, USART_FLAG_TXE) && !outputBuffer.empty()) {
-        USART_SendData(USART1, outputBuffer.front());
-        outputBuffer.pop();
-        if (outputBuffer.empty())
-            USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
-    }
-    if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE)) { // TODO clear flag?
-        inputBuffer.push(USART_ReceiveData(USART1));
-        processIncomingData();
-    }
-}
-
 void sendBatteryData() {
     // TODO
     //print(7, 'B', charge >> 8, charge & 0xFF, voltage >> 8, voltage & 0xFF, temperature >> 8, temperature & 0xFF);
@@ -166,7 +154,7 @@ void processIncomingData() { // TODO make it shorter
         if (inputBuffer.size() < 2)
             break;
         inputBuffer.pop();
-        setVibration(0xFFFF / 255 * inputBuffer.front());
+        vibration::set(0xFFFF / 255 * inputBuffer.front());
         inputBuffer.pop();
         break;
     case 'l':
@@ -182,5 +170,20 @@ void processIncomingData() { // TODO make it shorter
         inputBuffer.pop();
         printPlain(buffer);
         break;
+    }
+}
+
+}
+
+extern "C" void USART1_IRQHandler(void) {
+    if (USART_GetFlagStatus(USART1, USART_FLAG_TXE) && !connection::outputBuffer.empty()) {
+        USART_SendData(USART1, connection::outputBuffer.front());
+        connection::outputBuffer.pop();
+        if (connection::outputBuffer.empty())
+            USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
+    }
+    if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE)) { // TODO clear flag?
+        connection::inputBuffer.push(USART_ReceiveData(USART1));
+        connection::processIncomingData();
     }
 }

@@ -19,9 +19,13 @@
 
 #include "Notification.hpp"
 
+namespace notificationManager {
+
 extern Notification* activeNotification;
 extern std::vector<Notification*> notifications;
 
-void addNotification(Notification* newNotification);
-void updateNotification();
-void chooseMostPrioritizedNotification();
+void add(Notification* newNotification);
+void update();
+void chooseMostPrioritized();
+
+}

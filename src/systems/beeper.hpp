@@ -17,5 +17,9 @@
 
 #include <stm32f10x.h>
 
-void configureBeeper();
-void setBeeper(u16 amount);
+namespace beeper {
+
+void configure();
+void set(u16 amount);
+
+}

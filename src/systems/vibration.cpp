@@ -18,9 +18,10 @@
 #include <stm32f10x.h>
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_rcc.h>
-#include <cstdint>
 
-void configureVibration() {
+namespace vibration {
+
+void configure() {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
@@ -37,6 +38,8 @@ void configureVibration() {
     TIM4->CCR3 = 0; // turn it off
 }
 
-void setVibration(u16 amount) {
+void set(u16 amount) {
     TIM4->CCR3 = amount;
+}
+
 }

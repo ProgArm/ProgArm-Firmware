@@ -13,10 +13,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-#include <stm32f10x_spi.h>
+#include <stm32f10x.h>
+#include <stm32f10x_bkp.h>
+#include <stm32f10x_pwr.h>
+#include <stm32f10x_rcc.h>
 
-void BKP_Setup() {
+namespace bkp {
+
+void setup() {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
     PWR_BackupAccessCmd(ENABLE); // Enable write access to Backup domain
     BKP_ClearFlag(); // Clear Tamper pin Event(TE) pending flag
+}
+
 }

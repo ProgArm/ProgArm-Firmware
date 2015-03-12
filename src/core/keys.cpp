@@ -14,17 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 #include <stm32f10x.h>
+#include <cstdbool>
 
 #include "../input_codes.hpp"
 #include "actions.hpp"
 #include "connection.hpp"
 
-namespace {
+namespace keys {
+
 bool shiftPressed = false;
 bool shiftHolded = false;
 bool fnPressed = false;
 bool fnHolded = false;
-}
 
 void processKey(u16 action) {
     if (action == INPUT_Shift) {
@@ -42,5 +43,7 @@ void processKey(u16 action) {
             shiftPressed = false;
     }
     processAction(action);
-    printAction(action);
+    connection::printAction(action);
+}
+
 }
