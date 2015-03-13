@@ -27,8 +27,8 @@ static Pin PIN_RDYN(GPIOC, GPIO_Pin_7, GPIO_Speed_2MHz, GPIO_Mode_IN_FLOATING, f
 
 namespace spi {
 
-extern std::queue<u8> outputBufferSpi;
-extern std::queue<u8> inputBufferSpi;
+extern std::queue<u8> outputBuffer;
+extern std::queue<u8> inputBuffer;
 
 void setup();
 

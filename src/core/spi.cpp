@@ -27,20 +27,20 @@ uint packetInputBytesLeft = 0;
 uint packetOutputBytesLeft = 0;
 uint packetByteId = 0;
 
-std::queue<u8> outputBufferSpi;
-std::queue<u8> inputBufferSpi;
+std::queue<u8> outputBuffer;
+std::queue<u8> inputBuffer;
 
 // Send one byte over SPI (or 0 if output buffer is empty)
 // This function should be called even if you want to READ a byte
 // because SPI is working in full duplex
 void spiPush() {
-    if (packetByteId == 0 && !outputBufferSpi.empty() && outputBufferSpi.front() < outputBufferSpi.size()) { // without +1 because <
-        packetOutputBytesLeft = outputBufferSpi.front();
-        SPI_I2S_SendData(SPI1, outputBufferSpi.front()); // packet length
-        outputBufferSpi.pop();
+    if (packetByteId == 0 && !outputBuffer.empty() && outputBuffer.front() < outputBuffer.size()) { // without +1 because <
+        packetOutputBytesLeft = outputBuffer.front();
+        SPI_I2S_SendData(SPI1, outputBuffer.front()); // packet length
+        outputBuffer.pop();
     } else if (packetOutputBytesLeft > 0) {
-        SPI_I2S_SendData(SPI1, outputBufferSpi.front()); // data
-        outputBufferSpi.pop();
+        SPI_I2S_SendData(SPI1, outputBuffer.front()); // data
+        outputBuffer.pop();
         packetOutputBytesLeft--;
     } else
         // we have to send something because we are in Full-Duplex
@@ -55,10 +55,10 @@ void spiPull() {
         if (packetByteId == 1) { // byte 1 is packet length
             packetInputBytesLeft = data;
             if (packetInputBytesLeft > 0) {
-                inputBufferSpi.push(data);
+                inputBuffer.push(data);
             }
         } else if (packetInputBytesLeft > 0) {
-            inputBufferSpi.push(data);
+            inputBuffer.push(data);
             packetInputBytesLeft--;
         }
     }
