@@ -1,8 +1,10 @@
 #include "nrf8001.hpp"
 
 #include <sys/types.h>
+#include <cstdio>
 #include <queue>
 
+#include "../core/connection.hpp"
 #include "../core/spi.hpp"
 
 namespace nrf8001 {
@@ -243,6 +245,33 @@ void SendDataNack(u8 pipeNumber, u8 errorCode) { // returns DataCreditEvent
     spi::outputBuffer.push(0x18);
     spi::outputBuffer.push(pipeNumber);
     spi::outputBuffer.push(errorCode);
+}
+
+// Logic
+void processIncomingPacket() {
+    if (!spi::inputBuffer.empty() && spi::inputBuffer.size() > spi::inputBuffer.front()) {
+        uint length = spi::inputBuffer.front() - 1; // -1 because we read event type byte immediately
+        spi::inputBuffer.pop();
+        uint event = spi::inputBuffer.front();
+        spi::inputBuffer.pop();
+
+        u8 eventBytes[32]; // TODO what is the max size for input packets?
+        for (uint i = 0; i < length; i++) {
+            eventBytes[i] = spi::inputBuffer.front();
+            spi::inputBuffer.pop();
+        }
+        switch (event) {
+        case 0x81: {
+            DeviceStartedEvent* realEvent = (DeviceStartedEvent*) &eventBytes[0];
+            char buf[50];
+            sprintf(buf, "SPI data: %d", realEvent->operatingMode);
+            connection::printPlain(buf);
+            break;
+        }
+        default:
+            break;
+        }
+    }
 }
 
 }

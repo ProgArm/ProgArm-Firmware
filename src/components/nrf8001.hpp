@@ -19,6 +19,8 @@
 
 namespace nrf8001 {
 
+void processIncomingPacket();
+
 enum OperatingMode {
     TEST = 1, SETUP = 2, STANDBY = 3,
 };
@@ -43,6 +45,8 @@ enum ApplLatencyMode {
     APPLICATION_LATENCY_DISABLED = 0, APPLICATION_LATENCY_ENABLED = 1,
 };
 
+
+#pragma pack(push, 1)
 // System Events
 
 struct DeviceStartedEvent {
@@ -128,5 +132,7 @@ struct DataReceivedEvent {
 struct DataAckEvent {
     u8 servicePipeNumber; // 1..62
 };
+
+#pragma pack(pop)
 
 }

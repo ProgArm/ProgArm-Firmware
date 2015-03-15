@@ -21,52 +21,10 @@
 #include <stm32f10x_spi.h>
 #include <sys/types.h>
 
-namespace {
-
-uint packetInputBytesLeft = 0;
-uint packetOutputBytesLeft = 0;
-uint packetByteId = 0;
+namespace spi {
 
 std::queue<u8> outputBuffer;
 std::queue<u8> inputBuffer;
-
-// Send one byte over SPI (or 0 if output buffer is empty)
-// This function should be called even if you want to READ a byte
-// because SPI is working in full duplex
-void spiPush() {
-    if (packetByteId == 0 && !outputBuffer.empty() && outputBuffer.front() < outputBuffer.size()) { // without +1 because <
-        packetOutputBytesLeft = outputBuffer.front();
-        SPI_I2S_SendData(SPI1, outputBuffer.front()); // packet length
-        outputBuffer.pop();
-    } else if (packetOutputBytesLeft > 0) {
-        SPI_I2S_SendData(SPI1, outputBuffer.front()); // data
-        outputBuffer.pop();
-        packetOutputBytesLeft--;
-    } else
-        // we have to send something because we are in Full-Duplex
-        SPI_I2S_SendData(SPI1, 0);
-}
-
-void spiPull() {
-    auto data = SPI_I2S_ReceiveData(SPI1);
-    if (packetByteId == 0) {
-        // byte 0 is a weird byte (according to datasheet it should be discarded)
-    } else {
-        if (packetByteId == 1) { // byte 1 is packet length
-            packetInputBytesLeft = data;
-            if (packetInputBytesLeft > 0) {
-                inputBuffer.push(data);
-            }
-        } else if (packetInputBytesLeft > 0) {
-            inputBuffer.push(data);
-            packetInputBytesLeft--;
-        }
-    }
-}
-
-}
-
-namespace spi {
 
 void setup() {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
@@ -132,6 +90,48 @@ void setup() {
     //SPI_SSOutputCmd(SPI1, ENABLE);
     SPI_Cmd(SPI1, ENABLE);
     //SPI_Cmd(SPI1, ENABLE);
+}
+
+}
+
+namespace {
+
+uint packetInputBytesLeft = 0;
+uint packetOutputBytesLeft = 0;
+uint packetByteId = 0;
+
+// Send one byte over SPI (or 0 if output buffer is empty)
+// This function should be called even if you want to READ a byte
+// because SPI is working in full duplex
+void spiPush() {
+    if (packetByteId == 0 && !spi::outputBuffer.empty() && spi::outputBuffer.front() < spi::outputBuffer.size()) { // without +1 because <
+        packetOutputBytesLeft = spi::outputBuffer.front();
+        SPI_I2S_SendData(SPI1, spi::outputBuffer.front()); // packet length
+        spi::outputBuffer.pop();
+    } else if (packetOutputBytesLeft > 0) {
+        SPI_I2S_SendData(SPI1, spi::outputBuffer.front()); // data
+        spi::outputBuffer.pop();
+        packetOutputBytesLeft--;
+    } else
+        // we have to send something because we are in Full-Duplex
+        SPI_I2S_SendData(SPI1, 0);
+}
+
+void spiPull() {
+    auto data = SPI_I2S_ReceiveData(SPI1);
+    if (packetByteId == 0) {
+        // byte 0 is a weird byte (according to datasheet it should be discarded)
+    } else {
+        if (packetByteId == 1) { // byte 1 is packet length
+            packetInputBytesLeft = data;
+            if (packetInputBytesLeft > 0) {
+                spi::inputBuffer.push(data);
+            }
+        } else if (packetInputBytesLeft > 0) {
+            spi::inputBuffer.push(data);
+            packetInputBytesLeft--;
+        }
+    }
 }
 
 }
