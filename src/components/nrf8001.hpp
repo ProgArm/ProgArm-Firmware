@@ -22,7 +22,7 @@ namespace nrf8001 {
 void processIncomingPacket();
 
 enum OperatingMode {
-    TEST = 1, SETUP = 2, STANDBY = 3,
+    TEST = 1, SETUP = 2, STANDBY = 3, UNKNOWN = -1,
 };
 
 enum HwError {

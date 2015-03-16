@@ -1,13 +1,19 @@
 #include "nrf8001.hpp"
 
 #include <sys/types.h>
-#include <cstdio>
+#include <cstdbool>
+#include <cstring>
 #include <queue>
 
-#include "../core/connection.hpp"
 #include "../core/spi.hpp"
 
 namespace nrf8001 {
+
+OperatingMode status = UNKNOWN;
+bool connected = false;
+
+TimingEvent lastTimingEvent; // TODO null?
+uint dataCredits = 0;
 
 // System commands
 
@@ -248,11 +254,29 @@ void SendDataNack(u8 pipeNumber, u8 errorCode) { // returns DataCreditEvent
 }
 
 // Logic
+void sendConfiguration() {
+    // TODO
+}
+
+void onConnect(ConnectedEvent* event) {
+    connected = true;
+    // TODO
+}
+
+void onDisconnect(DisconnectedEvent* event) {
+    connected = false;
+    // TODO
+}
+
+void onReceive(DataReceivedEvent* event) {
+    // TODO
+}
+
 void processIncomingPacket() {
     if (!spi::inputBuffer.empty() && spi::inputBuffer.size() > spi::inputBuffer.front()) {
         uint length = spi::inputBuffer.front() - 1; // -1 because we read event type byte immediately
         spi::inputBuffer.pop();
-        uint event = spi::inputBuffer.front();
+        uint eventType = spi::inputBuffer.front();
         spi::inputBuffer.pop();
 
         u8 eventBytes[32]; // TODO what is the max size for input packets?
@@ -260,12 +284,82 @@ void processIncomingPacket() {
             eventBytes[i] = spi::inputBuffer.front();
             spi::inputBuffer.pop();
         }
-        switch (event) {
+        switch (eventType) {
         case 0x81: {
-            DeviceStartedEvent* realEvent = (DeviceStartedEvent*) &eventBytes[0];
-            char buf[50];
-            sprintf(buf, "SPI data: %d", realEvent->operatingMode);
-            connection::printPlain(buf);
+            auto event = (DeviceStartedEvent*) &eventBytes;
+            status = event->operatingMode;
+            if (status == SETUP)
+                sendConfiguration();
+            break;
+        }
+        case 0x82: {
+            auto event = (EchoEvent*) &eventBytes;
+            // TODO printPlain it?
+            break;
+        }
+        case 0x83: {
+            auto event = (HardwareErrorEvent*) &eventBytes;
+            // TODO this should be logged
+            break;
+        }
+        case 0x84: {
+            auto event = (CommandResponseEvent*) &eventBytes;
+            // XXX
+            break;
+        }
+        case 0x85: {
+            auto event = (ConnectedEvent*) &eventBytes;
+            onConnect(event);
+            break;
+        }
+        case 0x86: {
+            auto event = (DisconnectedEvent*) &eventBytes;
+            onDisconnect(event);
+            break;
+        }
+        case 0x87: {
+            auto event = (BondStatusEvent*) &eventBytes;
+            // XXX
+            break;
+        }
+        case 0x88: {
+            auto event = (PipeStatusEvent*) &eventBytes;
+            // TODO maintain a list of available pipes?
+            break;
+        }
+        case 0x89: {
+            auto event = (TimingEvent*) &eventBytes;
+            memcpy(&lastTimingEvent, event, sizeof(TimingEvent)); // TODO test it
+            break;
+        }
+        case 0x8E: {
+            auto event = (DisplayKeyEvent*) &eventBytes;
+            // XXX
+            break;
+        }
+        case 0x8F: {
+            auto event = (KeyRequestEvent*) &eventBytes;
+            // XXX
+            break;
+        }
+        case 0x8A: {
+            auto event = (DataCreditEvent*) &eventBytes;
+            dataCredits = event->dataCredits;
+            break;
+        }
+        case 0x8D: {
+            auto event = (PipeErrorEvent*) &eventBytes;
+            // TODO this should be logged
+            break;
+        }
+        case 0x8C: {
+            auto event = (DataReceivedEvent*) &eventBytes;
+            onReceive(event);
+            break;
+        }
+        case 0x8B: {
+            auto event = (DataAckEvent*) &eventBytes;
+            // TODO just ignore it?
             break;
         }
         default:
