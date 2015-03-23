@@ -1,13 +1,22 @@
 #include "nrf8001.hpp"
 
-#include <sys/types.h>
+#include <stdio.h>
 #include <cstdbool>
 #include <cstring>
 #include <queue>
 
+#include "../core/connection.hpp"
 #include "../core/spi.hpp"
+#include "../services.h"
 
 namespace nrf8001 {
+
+struct SetupPiece {
+    u8 skip;
+    u8 data[32];
+};
+
+const SetupPiece setupMessage[NB_SETUP_MESSAGES] = SETUP_MESSAGES_CONTENT;
 
 OperatingMode status = UNKNOWN;
 bool connected = false;
@@ -255,7 +264,9 @@ void SendDataNack(u8 pipeNumber, u8 errorCode) { // returns DataCreditEvent
 
 // Logic
 void sendConfiguration() {
-    // TODO
+    for (auto curMessage : setupMessage)
+        for (int i = 0; i < curMessage.data[0] + 1; i++)
+            spi::outputBuffer.push(curMessage.data[i]);
 }
 
 void onConnect(ConnectedEvent* event) {
@@ -284,10 +295,15 @@ void processIncomingPacket() {
             eventBytes[i] = spi::inputBuffer.front();
             spi::inputBuffer.pop();
         }
+        char buf[50];
+        sprintf(buf, "Packet received: %d", eventType);
+        connection::printPlain(buf);
         switch (eventType) {
         case 0x81: {
             auto event = (DeviceStartedEvent*) &eventBytes; // this is unportable, but unfortunately it is the only way to keep the code short
             status = event->operatingMode;
+            sprintf(buf, "Mode: %d", status);
+            connection::printPlain(buf);
             if (status == SETUP)
                 sendConfiguration();
             break;
@@ -304,7 +320,10 @@ void processIncomingPacket() {
         }
         case 0x84: {
             auto event = (CommandResponseEvent*) &eventBytes;
-            // XXX
+            if (event->status > 1) { // XXX change to enum
+                sprintf(buf, "NRF error: %d", event->status);
+                connection::printPlain(buf);
+            }
             break;
         }
         case 0x85: {
