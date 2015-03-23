@@ -286,7 +286,7 @@ void processIncomingPacket() {
         }
         switch (eventType) {
         case 0x81: {
-            auto event = (DeviceStartedEvent*) &eventBytes;
+            auto event = (DeviceStartedEvent*) &eventBytes; // this is unportable, but unfortunately it is the only way to keep the code short
             status = event->operatingMode;
             if (status == SETUP)
                 sendConfiguration();
