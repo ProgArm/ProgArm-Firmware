@@ -16,6 +16,7 @@
 #pragma once
 
 #include <stm32f10x.h>
+#include <sys/types.h>
 
 namespace nrf8001 {
 
@@ -44,7 +45,6 @@ enum RadioTransmitPowerLevel {
 enum ApplLatencyMode {
     APPLICATION_LATENCY_DISABLED = 0, APPLICATION_LATENCY_ENABLED = 1,
 };
-
 
 #pragma pack(push, 1)
 // System Events
@@ -134,5 +134,39 @@ struct DataAckEvent {
 };
 
 #pragma pack(pop)
+
+void test(TestFeature mode);
+void echo(u8 data[], uint size);
+void dtmCommand(u16 dtmCommand);
+void sleep();
+void wakeup();
+void setup(u8 data[], uint size);
+void readDynamicData();
+void writeDynamicData(u8 sequenceNumber, u8 data[], uint size);
+void getDeviceVersion();
+void getDeviceAddress();
+void getBatteryLevel();
+void XgetTemperature();
+void radioReset();
+void connect(u16 timeout, u16 advInterval);
+void radioReset(u16 timeout, u16 advInterval);
+void disconnect(Reason reason);
+void setTxPower(RadioTransmitPowerLevel radioTransmitPowerLevel);
+void changeTimingRequest();
+void changeTimingRequest(u16 intervalMin, u16 intervalMax, u16 slaveLatency, u16 timeout);
+void openRemotePipe(u8 servicePipeNumber);
+void setApplLatency(ApplLatencyMode applLatencyMode, u16 latency);
+void setKey();
+void setKey(char (&pin)[6]);
+void openAdvPipe(u8 (&advServiceDataPipes)[8]);
+void broadcast(u16 timeout, u16 advInterval);
+void bondSecurityRequest();
+void directedConnect();
+void closeRemotePipe(u8 servicePipeNumber);
+void setLocalData(u8 servicePipeNumber, u8 data[], uint size);
+void sendData(u8 servicePipeNumber, u8 data[], uint size);
+void SendDataAck(u8 servicePipeNumber);
+void RequestData(u8 servicePipeNumber);
+void SendDataNack(u8 pipeNumber, u8 errorCode);
 
 }
