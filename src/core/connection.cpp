@@ -182,7 +182,7 @@ extern "C" void USART1_IRQHandler(void) {
         if (connection::outputBuffer.empty())
             USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
     }
-    if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE)) { // TODO clear flag?
+    if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE)) {
         connection::inputBuffer.push(USART_ReceiveData(USART1));
         connection::processIncomingData();
     }
