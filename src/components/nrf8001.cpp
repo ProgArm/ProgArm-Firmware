@@ -271,12 +271,16 @@ void sendConfiguration() {
 
 void onConnect(ConnectedEvent* event) {
     connected = true;
-    // TODO
+    char buf[50];
+    sprintf(buf, "Connected!");
+    connection::printPlain(buf);
 }
 
 void onDisconnect(DisconnectedEvent* event) {
     connected = false;
-    // TODO
+    char buf[50];
+    sprintf(buf, "Disconnected (AciStatus=%d, BtLeStatus=%d)", event->aciStatus, event->btLeStatus);
+    connection::printPlain(buf);
 }
 
 void onReceive(DataReceivedEvent* event) {
